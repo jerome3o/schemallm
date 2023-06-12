@@ -57,13 +57,13 @@ class SendEmailTool(BaseTool):
 
 def main():
     # Imports just for testing
-    from homegpt.llm import get_llm_chat
+    from homegpt.llm import get_llm_chat, get_llm_chat_open_ai
     import os
 
     _, gmail_service = initialize_services()
 
     tools = [SendEmailTool(gmail_service=gmail_service)]
-    llm = get_llm_chat()
+    llm = get_llm_chat_open_ai()
     agent = initialize_agent(
         tools=tools,
         llm=llm,
