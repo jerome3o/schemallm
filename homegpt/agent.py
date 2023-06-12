@@ -1,6 +1,7 @@
 from typing import List, Tuple, Any, Union
 from langchain.schema import AgentAction, AgentFinish
 from langchain.agents import Tool, AgentExecutor, BaseSingleActionAgent
+from langchain.callbacks.manager import CallbackManager
 
 
 class FakeAgent(BaseSingleActionAgent):
@@ -11,7 +12,11 @@ class FakeAgent(BaseSingleActionAgent):
         return ["input"]
 
     def plan(
-        self, intermediate_steps: List[Tuple[AgentAction, str]], **kwargs: Any
+        self,
+        intermediate_steps: List[Tuple[AgentAction, str]],
+        input: str,
+        callbacks: CallbackManager,
+        **kwargs,
     ) -> Union[AgentAction, AgentFinish]:
         """Given input, decided what to do.
 
@@ -23,10 +28,16 @@ class FakeAgent(BaseSingleActionAgent):
         Returns:
             Action specifying what tool to use.
         """
-        return AgentAction(tool="Reverse", tool_input=kwargs["input"], log="")
+        return AgentAction(
+            tool="Reverse",
+            tool_input=input,
+            log="",
+        )
 
     async def aplan(
-        self, intermediate_steps: List[Tuple[AgentAction, str]], **kwargs: Any
+        self,
+        intermediate_steps: List[Tuple[AgentAction, str]],
+        **kwargs: Any,
     ) -> Union[AgentAction, AgentFinish]:
         """Given input, decided what to do.
 
