@@ -1,5 +1,8 @@
 from pathlib import Path
+import pickle
+import os
 
+from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -8,7 +11,8 @@ from googleapiclient.errors import HttpError
 _script_dir = Path(__file__).parent.resolve()
 
 # Set the path to your downloaded JSON file
-credentials_file = _script_dir / "secret" / "credentials.json"
+_client_credentials_file = _script_dir / "secret" / "credentials.json"
+_user_credentials_file = _script_dir / "secret" / "token.pickle"
 
 # Set the required scopes for the Calendar and Gmail APIs
 scopes = [
@@ -19,11 +23,32 @@ scopes = [
 
 def initialize_services(credentials_file, scopes):
     creds = None
-    try:
-        flow = InstalledAppFlow.from_client_secrets_file(credentials_file, scopes)
-        creds = flow.run_local_server(port=0)
-    except Exception as e:
-        print(e)
+
+    # Check if the token.pickle file exists, and load the credentials from it.
+    if os.path.exists(_user_credentials_file):
+        with open(_user_credentials_file, "rb") as token:
+            creds = pickle.load(token)
+
+    # If there are no valid credentials available, run the OAuth2 flow.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            try:
+                creds.refresh(Request())
+            except Exception as e:
+                print(e)
+        else:
+            try:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    credentials_file, scopes
+                )
+                creds = flow.run_local_server(port=0)
+
+                # Save the credentials for the next run
+                with open(_user_credentials_file, "wb") as token:
+                    pickle.dump(creds, token)
+
+            except Exception as e:
+                print(e)
 
     # Create the service objects
     calendar_service = build("calendar", "v3", credentials=creds)
@@ -34,7 +59,9 @@ def initialize_services(credentials_file, scopes):
 
 def main():
     try:
-        calendar_service, gmail_service = initialize_services(credentials_file, scopes)
+        calendar_service, gmail_service = initialize_services(
+            _client_credentials_file, scopes
+        )
 
         # Use the services to interact with the Calendar and Gmail APIs
         # For example, list calendars
