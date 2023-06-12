@@ -8,11 +8,11 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 
-_script_dir = Path(__file__).parent.resolve()
+_project_dir = Path(__file__).parent.parent.resolve()
 
 # Set the path to your downloaded JSON file
-_client_credentials_file = _script_dir / "secret" / "credentials.json"
-_user_credentials_file = _script_dir / "secret" / "token.pickle"
+_client_credentials_file = _project_dir / "secret" / "credentials.json"
+_user_credentials_file = _project_dir / "secret" / "token.pickle"
 
 # Set the required scopes for the Calendar and Gmail APIs
 scopes = [
