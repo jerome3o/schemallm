@@ -1,4 +1,5 @@
 # Import things that are needed generically
+import random
 from typing import Type, Optional
 from langchain import LLMMathChain
 from langchain.agents import AgentType, initialize_agent
@@ -11,44 +12,28 @@ from langchain.callbacks.manager import (
 )
 
 
-class ReverseInput(BaseModel):
-    """Input to the reverse tool."""
+def generate_random_numbers(n: int, lower: int, upper: int) -> list[int]:
+    """Generates n random numbers given n, lower, and upper bounds."""
+    return [random.randint(lower, upper) for _ in range(n)]
 
-    text: str = Field(..., description="The text to reverse.")
 
-
-class ReverseTool(BaseTool):
-    name = "reverse"
-    description = "Useful for reversing text."
-    args_schema: Type[BaseModel] = ReverseInput
-
-    def _run(
-        self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None
-    ) -> str:
-        """Use the tool."""
-        return query[::-1]
-
-    async def _arun(
-        self, query: str, run_manager: Optional[AsyncCallbackManagerForToolRun] = None
-    ) -> str:
-        """Use the tool asynchronously."""
-        raise NotImplementedError("Reverse does not support async")
+tool = StructuredTool.from_function(generate_random_numbers)
 
 
 def main():
-    from homegpt.llm import get_llm
+    from homegpt.llm import get_llm_chat
 
-    tools = [ReverseTool()]
-    llm = get_llm()
+    tools = [tool]
+    llm = get_llm_chat()
     agent = initialize_agent(
         tools=tools,
         llm=llm,
-        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
         verbose=True,
         max_iterations=4,
     )
 
-    agent.run("reverse this string: hello world")
+    agent.run("Generate 10 random numbers between 7 and 100")
 
 
 if __name__ == "__main__":
