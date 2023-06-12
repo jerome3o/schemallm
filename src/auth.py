@@ -1,11 +1,14 @@
 from pathlib import Path
+from typing import Optional, Tuple
 import pickle
 import os
 
+from googleapiclient.discovery import Resource
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from google.oauth2.credentials import Credentials
 
 
 _project_dir = Path(__file__).parent.parent.resolve()
@@ -21,8 +24,8 @@ scopes = [
 ]
 
 
-def initialize_services(credentials_file, scopes):
-    creds = None
+def initialize_services(credentials_file, scopes) -> Tuple[Resource, Resource]:
+    creds: Optional[Credentials] = None
 
     # Check if the token.pickle file exists, and load the credentials from it.
     if os.path.exists(_user_credentials_file):
@@ -32,10 +35,7 @@ def initialize_services(credentials_file, scopes):
     # If there are no valid credentials available, run the OAuth2 flow.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            try:
-                creds.refresh(Request())
-            except Exception as e:
-                print(e)
+            creds.refresh(Request())
         else:
             try:
                 flow = InstalledAppFlow.from_client_secrets_file(
