@@ -2,14 +2,16 @@ from pathlib import Path
 from typing import Optional, Tuple
 import pickle
 import os
+from email.mime.text import MIMEText
+from base64 import urlsafe_b64encode
 
 from googleapiclient.discovery import Resource
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
 
+_email = os.environ.get("GPT_EMAIL")
 
 _project_dir = Path(__file__).parent.parent.resolve()
 
@@ -63,25 +65,54 @@ def initialize_services(
     return calendar_service, gmail_service
 
 
+def send_email(
+    body: str,
+    subject: str,
+    recipient: str,
+    gmail_service: str,
+):
+    message = MIMEText(body)
+    message["to"] = recipient
+    message["from"] = _email
+    message["subject"] = subject
+
+    message = {"raw": urlsafe_b64encode(message.as_bytes()).decode()}
+
+    gmail_service.users().messages().send(userId="me", body=message).execute()
+
+
 def main():
-    try:
-        calendar_service, gmail_service = initialize_services(
-            _client_credentials_file, _scopes
-        )
+    calendar_service, gmail_service = initialize_services(
+        _client_credentials_file, _scopes
+    )
 
-        # Use the services to interact with the Calendar and Gmail APIs
-        # For example, list calendars
-        calendar_list = calendar_service.calendarList().list().execute()
-        for calendar in calendar_list["items"]:
-            print(calendar["summary"])
+    # Use the services to interact with the Calendar and Gmail APIs
+    # For example, list calendars
+    calendar_list = calendar_service.calendarList().list().execute()
+    for calendar in calendar_list["items"]:
+        print(calendar["summary"])
 
-        # For example, list the labels in Gmail
-        labels = gmail_service.users().labels().list(userId="me").execute()
-        for label in labels["labels"]:
-            print(label["name"])
+    # For example, list the labels in Gmail
+    labels = gmail_service.users().labels().list(userId="me").execute()
+    for label in labels["labels"]:
+        print(label["name"])
 
-    except HttpError as error:
-        print(f"An error occurred: {error}")
+    # send an email to jeromeswannack@gmail.com
+    subject = "hello world"
+    body = "This is a test email"
+
+    # Just using env vars for now
+    destination = os.environ["RECIPIENT_EMAIL"]
+
+    message = MIMEText(body)
+    message["to"] = destination
+    message["from"] = _email
+    message["subject"] = subject
+
+    message = {"raw": urlsafe_b64encode(message.as_bytes()).decode()}
+
+    gmail_service.users().messages().send(userId="me", body=message).execute()
+    print("Message sent successfully")
 
 
 if __name__ == "__main__":
