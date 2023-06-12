@@ -18,13 +18,19 @@ _client_credentials_file = _project_dir / "secret" / "credentials.json"
 _user_credentials_file = _project_dir / "secret" / "token.pickle"
 
 # Set the required scopes for the Calendar and Gmail APIs
-scopes = [
+_scopes = [
     "https://www.googleapis.com/auth/calendar",
     "https://www.googleapis.com/auth/gmail.modify",
 ]
 
 
-def initialize_services(credentials_file, scopes) -> Tuple[Resource, Resource]:
+def initialize_services(
+    credentials_file: Optional[str] = None,
+    scopes: Optional[list] = None,
+) -> Tuple[Resource, Resource]:
+    credentials_file = credentials_file or _client_credentials_file
+    scopes = scopes or _scopes
+
     creds: Optional[Credentials] = None
 
     # Check if the token.pickle file exists, and load the credentials from it.
@@ -60,7 +66,7 @@ def initialize_services(credentials_file, scopes) -> Tuple[Resource, Resource]:
 def main():
     try:
         calendar_service, gmail_service = initialize_services(
-            _client_credentials_file, scopes
+            _client_credentials_file, _scopes
         )
 
         # Use the services to interact with the Calendar and Gmail APIs
