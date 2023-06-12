@@ -1,27 +1,62 @@
-from langchain.agents import load_tools
-from langchain.agents import initialize_agent
-from langchain.agents import AgentType
-from langchain.tools import ShellTool
+from typing import List, Tuple, Any, Union
+from langchain.schema import AgentAction, AgentFinish
+from langchain.agents import Tool, AgentExecutor, BaseSingleActionAgent
 
-from homegpt.llm import get_llm
+
+class FakeAgent(BaseSingleActionAgent):
+    """Fake Custom Agent."""
+
+    @property
+    def input_keys(self):
+        return ["input"]
+
+    def plan(
+        self, intermediate_steps: List[Tuple[AgentAction, str]], **kwargs: Any
+    ) -> Union[AgentAction, AgentFinish]:
+        """Given input, decided what to do.
+
+        Args:
+            intermediate_steps: Steps the LLM has taken to date,
+                along with observations
+            **kwargs: User inputs.
+
+        Returns:
+            Action specifying what tool to use.
+        """
+        return AgentAction(tool="Reverse", tool_input=kwargs["input"], log="")
+
+    async def aplan(
+        self, intermediate_steps: List[Tuple[AgentAction, str]], **kwargs: Any
+    ) -> Union[AgentAction, AgentFinish]:
+        """Given input, decided what to do.
+
+        Args:
+            intermediate_steps: Steps the LLM has taken to date,
+                along with observations
+            **kwargs: User inputs.
+
+        Returns:
+            Action specifying what tool to use.
+        """
+        return AgentAction(tool="Search", tool_input=kwargs["input"], log="")
 
 
 def main():
-    llm = get_llm()
-    shell_tool = ShellTool()
-    shell_tool.description = shell_tool.description + f"args {shell_tool.args}".replace(
-        "{", "{{"
-    ).replace("}", "}}")
-    tools = load_tools(["llm-math"], llm=llm)
-    agent = initialize_agent(
-        tools + [shell_tool],
-        llm,
-        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    from homegpt.llm import get_llm_chat
+
+    reverse_tool = Tool(
+        name="Reverse",
+        description="Reverses a string.",
+        func=lambda s: s[::-1],
+    )
+    agent = FakeAgent()
+    agent_executor = AgentExecutor.from_agent_and_tools(
+        agent=agent,
+        tools=[reverse_tool],
         verbose=True,
-        max_iterations=4,
     )
 
-    output = agent.run("what is the square root of 15?")
+    agent_executor.run("Reverse the string 'hey'")
 
 
 if __name__ == "__main__":
