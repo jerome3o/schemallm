@@ -1,23 +1,13 @@
-import os
-
 from langchain.agents import load_tools
 from langchain.agents import initialize_agent
 from langchain.agents import AgentType
-from langchain.llms import OpenAI
 from langchain.tools import ShellTool
 
-
-_openai_api_base = os.environ["OPENAI_API_BASE"]
-_model = "vicuna-13b-v1.1-8bit"
+from homegpt.llm import get_llm
 
 
 def main():
-    llm = OpenAI(
-        temperature=0,
-        openai_api_base=_openai_api_base,
-        openai_api_key="no",
-        model=_model,
-    )
+    llm = get_llm()
     shell_tool = ShellTool()
     shell_tool.description = shell_tool.description + f"args {shell_tool.args}".replace(
         "{", "{{"

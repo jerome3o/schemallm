@@ -1,4 +1,4 @@
-from google_services import initialize_services
+from homegpt.google_services import initialize_services
 
 # base64 import
 import base64
