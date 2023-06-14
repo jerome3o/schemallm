@@ -44,7 +44,7 @@ class CustomPromptTemplate(StringPromptTemplate):
     # The template to use
     template: str
     # The list of tools available
-    tools: List[Tool]
+    tools: List[BaseTool]
 
     def format(self, **kwargs) -> str:
         # Get the intermediate steps (AgentAction, Observation tuples)
@@ -88,7 +88,7 @@ class CustomOutputParser(AgentOutputParser):
         )
 
 
-def get_agent(llm: BaseLLM, tools: List[BaseTool]) -> AgentExecutor:
+def get_agent(llm: BaseLLM, tools: List[Tool]) -> AgentExecutor:
     # LLM chain consisting of the LLM and a prompt
 
     output_parser = CustomOutputParser()
