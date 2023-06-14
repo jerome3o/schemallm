@@ -65,6 +65,9 @@ def initialize_services(
     return calendar_service, gmail_service
 
 
+# TODO(j.swannack): inject "from" email address somehow, or couple it to the
+# email address used to authenticate the API. For now, just use an env var.
+# This is so multiple email addresses can be used.
 def send_email(
     body: str,
     subject: str,
