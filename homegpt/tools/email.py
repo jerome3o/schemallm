@@ -1,7 +1,7 @@
 from typing import Optional, Type
 
-from langchain.agents import AgentType, initialize_agent
 from langchain.tools import BaseTool
+from langchain.llms.base import BaseLLM
 from langchain.callbacks.manager import (
     CallbackManagerForToolRun,
     AsyncCallbackManagerForToolRun,
@@ -9,7 +9,7 @@ from langchain.callbacks.manager import (
 from pydantic import BaseModel, EmailStr
 from googleapiclient.discovery import Resource
 
-from homegpt.google_services import initialize_services, send_email
+from homegpt.google_services import send_email
 
 
 # You can provide a custom args schema to add descriptions or custom validation
@@ -28,6 +28,7 @@ class SendEmailTool(BaseTool):
     )
     args_schema: Type[SendEmailSchema] = SendEmailSchema
     gmail_service: Resource
+    llm: BaseLLM
 
     def _run(
         self,
@@ -53,34 +54,3 @@ class SendEmailTool(BaseTool):
     ) -> str:
         """Use the tool asynchronously."""
         raise NotImplementedError("custom_search does not support async")
-
-
-def main():
-    # Imports just for testing
-    from homegpt.llm import get_llm_chat, get_llm_chat_open_ai
-    import os
-
-    _, gmail_service = initialize_services()
-
-    tools = [SendEmailTool(gmail_service=gmail_service)]
-    llm = get_llm_chat_open_ai()
-    agent = initialize_agent(
-        tools=tools,
-        llm=llm,
-        agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-        verbose=True,
-        max_iterations=4,
-    )
-
-    _recipient = os.environ.get("RECIPIENT_EMAIL")
-    agent.run(
-        f"Send an email to {_recipient} with subject 'hello'"
-        " and the body is a poem about frogs"
-    )
-
-
-if __name__ == "__main__":
-    import logging
-
-    logging.basicConfig(level=logging.INFO)
-    main()
