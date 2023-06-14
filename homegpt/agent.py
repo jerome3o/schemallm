@@ -17,7 +17,8 @@ from langchain.schema import AgentAction, AgentFinish
 # https://python.langchain.com/en/latest/modules/agents/agents/custom_llm_agent.html
 
 # Prompt template
-template = """Answer the following questions as best you can. You have access to the following tools:
+template = """Answer the following questions as best you can. You have access to the \
+following tools:
 
 {tools}
 
@@ -69,8 +70,8 @@ class CustomOutputParser(AgentOutputParser):
         # Check if agent should finish
         if "Final Answer:" in llm_output:
             return AgentFinish(
-                # Return values is generally always a dictionary with a single `output` key
-                # It is not recommended to try anything else at the moment :)
+                # Return values is generally always a dictionary with a single `output`
+                # key. It is not recommended to try anything else at the moment :)
                 return_values={"output": llm_output.split("Final Answer:")[-1].strip()},
                 log=llm_output,
             )
@@ -119,6 +120,8 @@ def get_agent(llm: BaseLLM, tools: List[BaseTool]) -> AgentExecutor:
 
 def main():
     from homegpt.llm import get_llm_chat
+
+    print(template)
 
     llm = get_llm_chat()
     reverse_tool = Tool(
