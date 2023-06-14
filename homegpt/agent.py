@@ -1,6 +1,8 @@
 import re
 from typing import List, Union
 
+from langchain.llms.base import BaseLLM
+from langchain.tools import BaseTool
 from langchain import LLMChain
 from langchain.agents import (
     AgentExecutor,
@@ -85,6 +87,36 @@ class CustomOutputParser(AgentOutputParser):
         )
 
 
+def get_agent(llm: BaseLLM, tools: List[BaseTool]) -> AgentExecutor:
+    # LLM chain consisting of the LLM and a prompt
+
+    output_parser = CustomOutputParser()
+    prompt = CustomPromptTemplate(
+        template=template,
+        tools=tools,
+        # This omits the `agent_scratchpad`, `tools`, and `tool_names` variables
+        # because those are generated dynamically.
+        # This includes the `intermediate_steps` variable because that is needed
+        input_variables=["input", "intermediate_steps"],
+    )
+
+    llm_chain = LLMChain(llm=llm, prompt=prompt)
+
+    tool_names = [tool.name for tool in tools]
+    agent = LLMSingleActionAgent(
+        llm_chain=llm_chain,
+        output_parser=output_parser,
+        stop=["\nObservation:"],
+        allowed_tools=tool_names,
+    )
+    agent_executor = AgentExecutor.from_agent_and_tools(
+        agent=agent,
+        tools=tools,
+        verbose=True,
+    )
+    return agent_executor
+
+
 def main():
     from homegpt.llm import get_llm_chat
 
@@ -96,35 +128,8 @@ def main():
     )
     tools = [reverse_tool]
 
-    prompt = CustomPromptTemplate(
-        template=template,
-        tools=tools,
-        # This omits the `agent_scratchpad`, `tools`, and `tool_names` variables
-        # because those are generated dynamically.
-        # This includes the `intermediate_steps` variable because that is needed
-        input_variables=["input", "intermediate_steps"],
-    )
-
-    # LLM chain consisting of the LLM and a prompt
-    llm_chain = LLMChain(llm=llm, prompt=prompt)
-
-    output_parser = CustomOutputParser()
-
-    tool_names = [tool.name for tool in tools]
-    agent = LLMSingleActionAgent(
-        llm_chain=llm_chain,
-        output_parser=output_parser,
-        stop=["\nObservation:"],
-        allowed_tools=tool_names,
-    )
-
-    agent_executor = AgentExecutor.from_agent_and_tools(
-        agent=agent,
-        tools=tools,
-        verbose=True,
-    )
-
-    agent_executor.run("Reverse the string 'hey'")
+    agent = get_agent(llm=llm, tools=tools)
+    agent.run("Reverse the string 'hey'")
 
 
 if __name__ == "__main__":
