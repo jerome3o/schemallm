@@ -17,7 +17,7 @@ from langchain.schema import AgentAction, AgentFinish
 # https://python.langchain.com/en/latest/modules/agents/agents/custom_llm_agent.html
 
 # Prompt template
-template = """Answer the following questions as best you can, but speaking as a pirate might speak. You have access to the following tools:
+template = """Answer the following questions as best you can. You have access to the following tools:
 
 {tools}
 
@@ -32,7 +32,7 @@ Observation: the result of the action
 Thought: I now know the final answer
 Final Answer: the final answer to the original input question
 
-Begin! Remember to speak as a pirate when giving your final answer. Use lots of "Arg"s
+Begin!
 
 Question: {input}
 {agent_scratchpad}"""
@@ -64,23 +64,6 @@ class CustomPromptTemplate(StringPromptTemplate):
         return self.template.format(**kwargs)
 
 
-reverse_tool = Tool(
-    name="Reverse",
-    description="Reverses a string.",
-    func=lambda s: s[::-1],
-)
-tools = [reverse_tool]
-
-
-prompt = CustomPromptTemplate(
-    template=template,
-    tools=tools,
-    # This omits the `agent_scratchpad`, `tools`, and `tool_names` variables because those are generated dynamically
-    # This includes the `intermediate_steps` variable because that is needed
-    input_variables=["input", "intermediate_steps"],
-)
-
-
 class CustomOutputParser(AgentOutputParser):
     def parse(self, llm_output: str) -> Union[AgentAction, AgentFinish]:
         # Check if agent should finish
@@ -104,16 +87,30 @@ class CustomOutputParser(AgentOutputParser):
         )
 
 
-output_parser = CustomOutputParser()
-
-
 def main():
     from homegpt.llm import get_llm_chat
 
     llm = get_llm_chat()
+    reverse_tool = Tool(
+        name="Reverse",
+        description="Reverses a string.",
+        func=lambda s: s[::-1],
+    )
+    tools = [reverse_tool]
+
+    prompt = CustomPromptTemplate(
+        template=template,
+        tools=tools,
+        # This omits the `agent_scratchpad`, `tools`, and `tool_names` variables
+        # because those are generated dynamically.
+        # This includes the `intermediate_steps` variable because that is needed
+        input_variables=["input", "intermediate_steps"],
+    )
 
     # LLM chain consisting of the LLM and a prompt
     llm_chain = LLMChain(llm=llm, prompt=prompt)
+
+    output_parser = CustomOutputParser()
 
     tool_names = [tool.name for tool in tools]
     agent = LLMSingleActionAgent(
