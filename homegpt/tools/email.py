@@ -40,11 +40,9 @@ class SendEmailTool(BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
         """Use the tool."""
-
+        inputs = get_email_parameters(input, self.llm)
         send_email(
-            body=body,
-            subject=subject,
-            recipient=recipient,
+            **inputs.dict(),
             gmail_service=self.gmail_service,
         )
 
