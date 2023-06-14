@@ -1,10 +1,26 @@
-from homegpt.google_services import initialize_services
-
-# base64 import
+import os
 import base64
+
+from homegpt.google_services import initialize_services
+from homegpt.agent import get_agent
+from homegpt.llm import get_llm
+from homegpt.tools.email import SendEmailTool
+
+_RECIPIENT = os.environ["RECIPIENT_EMAIL"]
 
 
 def main():
+    llm = get_llm()
+    _, gmail_service = initialize_services()
+    send_email_tool = SendEmailTool(
+        gmail_service=gmail_service,
+        llm=llm,
+    )
+    agent = get_agent(llm=llm, tools=[send_email_tool])
+    agent.run(f"Send an email to {_RECIPIENT} about frogs.")
+
+
+def test_google_services():
     calendar_service, gmail_service = initialize_services()
 
     # get all calendar events from the last 30 days
