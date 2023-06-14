@@ -1,4 +1,4 @@
-from typing import Optional, Type
+from typing import Optional
 
 from langchain.tools import BaseTool
 from langchain.llms.base import BaseLLM
@@ -12,13 +12,18 @@ from googleapiclient.discovery import Resource
 from homegpt.google_services import send_email
 
 
-# You can provide a custom args schema to add descriptions or custom validation
-
-
-class SendEmailSchema(BaseModel):
+class SendEmailParameters(BaseModel):
     subject: str
     body: str
     recipient: EmailStr
+
+
+def get_email_parameters(input: str, llm: BaseLLM) -> SendEmailParameters:
+    return SendEmailParameters(
+        subject="This is the subject of the email",
+        body="This is the body of the email",
+        recipient="",
+    )
 
 
 class SendEmailTool(BaseTool):
@@ -26,18 +31,16 @@ class SendEmailTool(BaseTool):
     description = (
         "Useful for sending emails, a subject, body, and recipient are required."
     )
-    args_schema: Type[SendEmailSchema] = SendEmailSchema
     gmail_service: Resource
     llm: BaseLLM
 
     def _run(
         self,
-        subject: str,
-        body: str,
-        recipient: str,
+        input: str,
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
         """Use the tool."""
+
         send_email(
             body=body,
             subject=subject,
