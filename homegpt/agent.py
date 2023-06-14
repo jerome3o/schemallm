@@ -1,15 +1,13 @@
 import re
-from typing import Any, List, Tuple, Union
+from typing import List, Union
 
-from langchain import LLMChain, OpenAI, SerpAPIWrapper
+from langchain import LLMChain
 from langchain.agents import (
     AgentExecutor,
     AgentOutputParser,
-    BaseSingleActionAgent,
     LLMSingleActionAgent,
     Tool,
 )
-from langchain.callbacks.manager import CallbackManager
 from langchain.prompts import StringPromptTemplate
 from langchain.schema import AgentAction, AgentFinish
 
