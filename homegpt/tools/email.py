@@ -19,6 +19,14 @@ class SendEmailParameters(BaseModel):
 
 
 def get_email_parameters(input: str, llm: BaseLLM) -> SendEmailParameters:
+    # Get the subject
+    # Get the body
+    # Get the recipient
+
+    # Need to find a robust way of get these values from the llm, based on the input.
+    # We can hard code for now, but a more general solution would be to do some jsonschema
+    # validation
+
     return SendEmailParameters(
         subject="This is the subject of the email",
         body="This is the body of the email",
