@@ -7,4 +7,7 @@ Prior art:
 * [ParserLLM](https://github.com/r2d4/parserllm)
 * [jsonformer](https://github.com/1rgs/jsonformer)
 
-Potential quick approaches would be to generate a parser for a given JSON schema, and hand that to ParserLLM.
+Potential quick approaches:
+
+* Use jsonformer as is
+* Generate a context free grammar from a given JSON schema, and hand that to ParserLLM.
