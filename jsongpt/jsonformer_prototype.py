@@ -16,7 +16,7 @@ class PersonDetails(BaseModel):
 
 def main():
     tokenizer = AutoTokenizer.from_pretrained(_model)
-    model = AutoModelForCausalLM.from_pretrained(model=_model, load_in_8bit=True, device_map="auto")
+    model = AutoModelForCausalLM.from_pretrained(_model, load_in_8bit=True, device_map="auto")
 
     schema = PersonDetails.schema()
 
