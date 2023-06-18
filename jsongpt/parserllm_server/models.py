@@ -81,6 +81,8 @@ class NullJsonSchema(BaseJsonSchema):
 
 
 JsonSchema = Union[
+    RefJsonSchema,
+    AnyOfJsonSchema,
     StringJsonSchema,
     ObjectJsonSchema,
     ArrayJsonSchema,
@@ -88,9 +90,10 @@ JsonSchema = Union[
     IntegerJsonSchema,
     BooleanJsonSchema,
     NullJsonSchema,
-    RefJsonSchema,
-    AnyOfJsonSchema,
 ]
+
+RefJsonSchema.update_forward_refs()
+AnyOfJsonSchema.update_forward_refs()
 StringJsonSchema.update_forward_refs()
 ObjectJsonSchema.update_forward_refs()
 ArrayJsonSchema.update_forward_refs()
@@ -98,8 +101,6 @@ NumberJsonSchema.update_forward_refs()
 IntegerJsonSchema.update_forward_refs()
 BooleanJsonSchema.update_forward_refs()
 NullJsonSchema.update_forward_refs()
-RefJsonSchema.update_forward_refs()
-AnyOfJsonSchema.update_forward_refs()
 
 
 def parse_json_schema(schema: Dict[str, Any]) -> JsonSchema:
