@@ -19,7 +19,7 @@ app = FastAPI()
 _model = os.environ["MODEL_PATH"]
 
 
-@app.post("/v1/completion/with-schema", response_model=CompletionResponse)
+@app.post("/v1/completion/with-schema", response_model=SchemaCompletionResponse)
 def completion(r: SchemaCompletionRequest):
     if r.schema_restriction is not None:
         m = Jsonformer(
@@ -40,7 +40,7 @@ def completion(r: CompletionRequest):
 
 
 print("loading tokenizer")
-tokenizer = AutoTokenizer.from_pretrained(_model)
+tokenizer = AutoTokenizer.from_pretrained(_model, use_fast=True)
 print("loading model")
 model = AutoModelForCausalLM.from_pretrained(
     _model,
