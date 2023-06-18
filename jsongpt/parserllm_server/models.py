@@ -4,7 +4,7 @@ from enum import Enum
 from pydantic import parse_obj_as
 
 
-class Type(str, Enum):
+class SchemaType(str, Enum):
     OBJECT = "object"
     ARRAY = "array"
     STRING = "string"
@@ -25,21 +25,21 @@ class BaseJsonSchema(BaseModel):
 
 
 class StringJsonSchema(BaseJsonSchema):
-    type: Type = Field(Type.STRING, const=True)
+    type: SchemaType = Field(SchemaType.STRING, const=True)
     minLength: Optional[int]
     maxLength: Optional[int]
     pattern: Optional[str]
 
 
 class ObjectJsonSchema(BaseJsonSchema):
-    type: Type = Field(Type.OBJECT, const=True)
+    type: SchemaType = Field(SchemaType.OBJECT, const=True)
     properties: Optional[Dict[str, "JsonSchema"]]
     required: Optional[List[str]]
     additionalProperties: Optional[Union[bool, "JsonSchema"]]
 
 
 class ArrayJsonSchema(BaseJsonSchema):
-    type: Type = Field(Type.ARRAY, const=True)
+    type: SchemaType = Field(SchemaType.ARRAY, const=True)
     items: Optional[Union["JsonSchema", List["JsonSchema"]]]
     minItems: Optional[int]
     maxItems: Optional[int]
@@ -47,7 +47,7 @@ class ArrayJsonSchema(BaseJsonSchema):
 
 
 class NumberJsonSchema(BaseJsonSchema):
-    type: Type = Field(Type.NUMBER, const=True)
+    type: SchemaType = Field(SchemaType.NUMBER, const=True)
     minimum: Optional[float]
     maximum: Optional[float]
     exclusiveMinimum: Optional[bool]
@@ -56,7 +56,7 @@ class NumberJsonSchema(BaseJsonSchema):
 
 
 class IntegerJsonSchema(BaseJsonSchema):
-    type: Type = Field(Type.INTEGER, const=True)
+    type: SchemaType = Field(SchemaType.INTEGER, const=True)
     minimum: Optional[int]
     maximum: Optional[int]
     exclusiveMinimum: Optional[bool]
@@ -65,11 +65,11 @@ class IntegerJsonSchema(BaseJsonSchema):
 
 
 class BooleanJsonSchema(BaseJsonSchema):
-    type: Type = Field(Type.BOOLEAN, const=True)
+    type: SchemaType = Field(SchemaType.BOOLEAN, const=True)
 
 
 class NullJsonSchema(BaseJsonSchema):
-    type: Type = Field(Type.NULL, const=True)
+    type: SchemaType = Field(SchemaType.NULL, const=True)
 
 
 JsonSchema = Union[
