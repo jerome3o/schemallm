@@ -33,14 +33,14 @@ class StringJsonSchema(BaseJsonSchema):
 
 class ObjectJsonSchema(BaseJsonSchema):
     type: Type = Field(Type.OBJECT, const=True)
-    properties: Optional[Dict[str, "AnyJsonSchema"]]
+    properties: Optional[Dict[str, "JsonSchema"]]
     required: Optional[List[str]]
-    additionalProperties: Optional[Union[bool, "AnyJsonSchema"]]
+    additionalProperties: Optional[Union[bool, "JsonSchema"]]
 
 
 class ArrayJsonSchema(BaseJsonSchema):
     type: Type = Field(Type.ARRAY, const=True)
-    items: Optional[Union["AnyJsonSchema", List["AnyJsonSchema"]]]
+    items: Optional[Union["JsonSchema", List["JsonSchema"]]]
     minItems: Optional[int]
     maxItems: Optional[int]
     uniqueItems: Optional[bool]
@@ -72,7 +72,7 @@ class NullJsonSchema(BaseJsonSchema):
     type: Type = Field(Type.NULL, const=True)
 
 
-AnyJsonSchema = Union[
+JsonSchema = Union[
     StringJsonSchema,
     ObjectJsonSchema,
     ArrayJsonSchema,
@@ -86,12 +86,16 @@ ObjectJsonSchema.update_forward_refs()
 ArrayJsonSchema.update_forward_refs()
 
 
+def parse_json_schema(schema: Dict[str, Any]) -> JsonSchema:
+    return parse_obj_as(JsonSchema, schema)
+
+
 def main():
     class Details(BaseModel):
         season: str
         temperature_celsius: float
 
-    schema = parse_obj_as(AnyJsonSchema, Details.schema())
+    schema = parse_obj_as(JsonSchema, Details.schema())
     print(schema)
 
 
