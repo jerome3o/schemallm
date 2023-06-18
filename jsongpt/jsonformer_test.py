@@ -6,21 +6,19 @@ from pydantic import BaseModel
 from models import SchemaCompletionRequest
 
 
-class PersonDetails(BaseModel):
-    name: str
-    email: str
-    nicknames: List[str]
+class Details(BaseModel):
+    season: str
+    temperature_celsius: float
 
 
 def main():
     prompt = (
-        "My name is jerome - email is jeromeswannack@gmail.com, and my friends call me j-dog"
-        ", but you can call me steve\nJSON object of the above information:\n"
+        "Oh boy, it's cold outside! it must be winter and about 13 degrees celsius."
     )
     request = SchemaCompletionRequest(
-        prompt="My name is jerome - email is ",
+        prompt=prompt,
         max_tokens=2000,
-        schema_restriction=PersonDetails.schema(),
+        schema_restriction=Details.schema(),
     )
 
     resp = requests.post(
