@@ -10,7 +10,7 @@ from models import (
     BooleanJsonSchema,
     ObjectJsonSchema,
     ArrayJsonSchema,
-    JsonSchemaRef,
+    RefJsonSchema,
 )
 
 _PREFIX = """
@@ -88,7 +88,7 @@ def create_lark_cfg_for_schema_rec(schema: JsonSchema, context: BuildContext = N
     if context is None:
         context = BuildContext()
 
-    if isinstance(schema, JsonSchemaRef):
+    if isinstance(schema, RefJsonSchema):
         return create_cfg_for_ref(schema.ref, context)
 
     if schema.type == SchemaType.STRING:
