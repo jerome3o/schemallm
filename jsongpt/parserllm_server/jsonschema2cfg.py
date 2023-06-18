@@ -1,6 +1,8 @@
 import json
 from pydantic import BaseModel
+from typing import List
 from models import (
+    parse_json_schema,
     JsonSchema,
     SchemaType,
     StringJsonSchema,
@@ -11,23 +13,33 @@ from models import (
 )
 
 _PREFIX = """
-    %import common.ESCAPED_STRING
-    %import common.SIGNED_NUMBER
-    %import common.WS_INLINE
-    %ignore WS_INLINE
+%import common.ESCAPED_STRING
+%import common.SIGNED_NUMBER
+%import common.WS_INLINE
+%ignore WS_INLINE
 
-    BOOLEAN_VALUE: "true" | "false"
-
-    ?start: json_object
+BOOLEAN_VALUE: "true" | "false"
 """
 
 
 class BuildContext(BaseModel):
-    current_prefix: str = ""
-    current_suffix: str = ""
+    pref: str = ""
+    suff: str = ""
 
 
-def create_lark_cfg_for_schema(schema: JsonSchema, context: BuildContext = None):
+def create_lark_cfg_for_schema(schema: JsonSchema):
+    inner = create_lark_cfg_for_schema_rec(schema)
+    return f"""{_PREFIX}\n?start: {get_title(schema)}\n{inner}"""
+
+
+def get_title(schema: JsonSchema, context: BuildContext = None):
+    if context is None:
+        context = BuildContext()
+
+    return f"{context.pref}{schema.title}{context.suff}".lower().replace(" ", "_")
+
+
+def create_lark_cfg_for_schema_rec(schema: JsonSchema, context: BuildContext = None):
     if context is None:
         context = BuildContext()
 
@@ -46,47 +58,77 @@ def create_lark_cfg_for_schema(schema: JsonSchema, context: BuildContext = None)
 
 
 def create_cfg_for_string(schema: StringJsonSchema, context: BuildContext):
-    return f"{schema.title}: ESCAPED_STRING"
+    return f"{get_title(schema, context)}: ESCAPED_STRING\n"
 
 
 def create_cfg_for_number(schema: NumberJsonSchema, context: BuildContext):
-    return f"{schema.title} SIGNED_NUMBER"
+    return f"{get_title(schema, context)}: SIGNED_NUMBER\n"
 
 
 def create_cfg_for_boolean(schema: BooleanJsonSchema, context: BuildContext):
-    return f"{schema.title}: BOOLEAN_VALUE"
+    return f"{get_title(schema, context)}: BOOLEAN_VALUE\n"
 
 
 def create_cfg_for_object(schema: ObjectJsonSchema, context: BuildContext):
+    output = ""
+    full_property_names: List[str] = []
+    full_object_name = f"{get_title(schema, context)}"
+
     for property_name, property_schema in schema.properties.items():
-        property_cfg = create_lark_cfg_for_schema(property_schema)
+        full_property_name = get_title(property_schema, context)
+        full_property_names.append(full_property_name)
+
+        output += f'{full_property_name}: "{{" {full_property_name}_key ":" {full_property_name}_value "}}"\n'
+        output += f'{full_property_name}_key: "\\"{property_name}\\""\n'
+
+        new_context = BuildContext(
+            pref=context.pref,
+            suff="_value",
+        )
+        output += create_lark_cfg_for_schema_rec(property_schema, new_context)
+
+    joiner = ' "," '
+    output += f'{full_object_name}: "{{" {joiner.join(full_property_names)} "}}"\n'
+
+    return output
 
 
-def create_cfg_for_array(item_schema: ArrayJsonSchema, context: BuildContext):
-    return f"""
-        array: "[" ( {item_schema["$ref"]} ("," {item_schema["$ref"]}) * )? "]"
-    """
+def create_cfg_for_array(schema: ArrayJsonSchema, context: BuildContext):
+    output = ""
+
+    # assume that the array is homogenous i.e. all items are of the same type, .items is a JsonSchema
+    full_title = f"{get_title(schema, context)}"
+    output += f'{full_title}: "[" {full_title}_item "]"\n'
+
+    new_context = BuildContext(
+        pref=context.pref,
+        suff="_item",
+    )
+    output += create_lark_cfg_for_schema_rec(schema.items, new_context)
+
+    return output
 
 
 if __name__ == "__main__":
+    from lark import Lark
+
     jsonschema = """
     {"title": "Details", "type": "object", "properties": {"season": {"title": "Season", "type": "string"}, "temperature_celsius": {"title": "Temperature Celsius", "type": "number"}, "observations": {"title": "Observations", "type": "array", "items": {"$ref": "#/definitions/Observation"}}}, "required": ["season", "temperature_celsius", "observations"], "definitions": {"Observation": {"title": "Observation", "type": "object", "properties": {"reporter": {"title": "Reporter", "type": "string"}, "value": {"title": "Value", "type": "number"}}, "required": ["reporter", "value"]}}}
     """
 
-    schema = json.loads(jsonschema)
+    schema_dict = json.loads(jsonschema)
+    schema = parse_json_schema(schema_dict)
+
+    json_instance = """
+    {"season": "winter", "temperature_celsius": -5, "observations": [{"reporter": "John", "value": 1.2}, {"reporter": "Jane", "value": 3.4}]}
+    """
 
     # Generate Lark grammar for the main JSON schema
     main_cfg = create_lark_cfg_for_schema(schema)
+    # print with line number:
+    for i, l in enumerate(main_cfg.split("\n")):
+        print(f"{i+1:03d}: {l}")
 
-    # Generate Lark grammar for definition schemas
-    definition_cfg = "\n\n".join(
-        [
-            f"{definition_id} = {create_lark_cfg_for_schema(definition_schema)}"
-            for definition_id, definition_schema in schema["definitions"].items()
-        ]
-    )
-
-    # Combine the main schema and definitions
-    full_cfg = main_cfg + "\n\n" + definition_cfg
-
-    print(full_cfg)
+    parser = Lark(main_cfg, parser="lalr")
+    tree = parser.parse(json_instance)
+    print(tree)
