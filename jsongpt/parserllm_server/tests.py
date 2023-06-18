@@ -57,12 +57,13 @@ def test_optional():
 def test_union():
     class ReporterDetails(BaseModel):
         name: str
-        age: int
+        age: float
 
     class Observation(BaseModel):
         reporter: Union[str, ReporterDetails]
         value: float
 
+    print(Observation.schema_json(indent=2))
     schema = parse_json_schema(Observation.schema())
     cfg = create_lark_cfg_for_schema(schema)
 

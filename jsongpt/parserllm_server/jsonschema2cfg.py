@@ -11,6 +11,7 @@ from models import (
     ObjectJsonSchema,
     ArrayJsonSchema,
     RefJsonSchema,
+    AnyOfJsonSchema,
 )
 
 _PREFIX = """
@@ -91,6 +92,9 @@ def create_lark_cfg_for_schema_rec(schema: JsonSchema, context: BuildContext = N
     if isinstance(schema, RefJsonSchema):
         return create_cfg_for_ref(schema.ref, context)
 
+    if isinstance(schema, AnyOfJsonSchema):
+        return create_cfg_for_any_of(schema, context)
+
     if schema.type == SchemaType.STRING:
         return create_cfg_for_string(schema, context)
     elif schema.type == SchemaType.NUMBER:
@@ -102,7 +106,23 @@ def create_lark_cfg_for_schema_rec(schema: JsonSchema, context: BuildContext = N
     elif schema.type == SchemaType.ARRAY:
         return create_cfg_for_array(schema, context)
     else:
-        raise ValueError(f"Unsupported type: {schema['type']}")
+        raise ValueError(f"Unsupported type: {schema.type}")
+
+
+def create_cfg_for_any_of(schema: AnyOfJsonSchema, context: BuildContext) -> str:
+    output = ""
+    full_title = f"{get_title(schema, context)}"
+    full_title_items = []
+    for i, item in enumerate(schema.anyOf):
+        new_context = context.update_path(f"{full_title}_item_type_{i}")
+        output += create_lark_cfg_for_schema_rec(item, new_context)
+        full_title_items.append(new_context.path)
+
+    joiner = " | "
+    value = joiner.join(full_title_items)
+    output += f"{full_title}: {if_required(context, value)}\n"
+
+    return output
 
 
 def create_cfg_for_ref(ref: str, context: BuildContext) -> str:
