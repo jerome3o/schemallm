@@ -1,6 +1,6 @@
 import json
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Optional
 from models import (
     parse_json_schema,
     JsonSchema,
@@ -31,8 +31,8 @@ class BuildContext(BaseModel):
     pref: str = ""
     suff: str = ""
     path: str = ""
-    refs: Dict[str, JsonSchema] = {}
-    defined_refs: Dict[str, str] = {}
+    refs: Optional[Dict[str, JsonSchema]] = {}
+    defined_refs: Optional[Dict[str, str]] = {}
 
     class Config:
         arbitrary_types_allowed = True
@@ -96,9 +96,9 @@ def create_cfg_for_ref(ref: str, context: BuildContext) -> str:
             context.refs[ref_name], new_context
         )
         context.defined_refs[ref_name] = new_context.path
-        return ref_definition + f"{get_title(schema, context)}: {new_context.path}\n"
+        return ref_definition + f"{get_title(None, context)}: {new_context.path}\n"
     elif ref_name in context.defined_refs:
-        return f"{get_title(schema, context)}: {context.defined_refs[ref_name]}\n"
+        return f"{get_title(None, context)}: {context.defined_refs[ref_name]}\n"
     else:
         raise ValueError(f"Unknown reference: {ref_name}")
 
