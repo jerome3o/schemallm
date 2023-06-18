@@ -1,7 +1,6 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, parse_obj_as
 from typing import Optional, Any, Dict, Union, List
 from enum import Enum
-from pydantic import parse_obj_as
 
 
 class SchemaType(str, Enum):
@@ -19,9 +18,14 @@ class BaseJsonSchema(BaseModel):
     description: Optional[str]
     default: Optional[Any]
     enum: Optional[List[Any]]
+    definitions: Optional[Dict[str, "JsonSchema"]]
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class JsonSchemaRef(BaseModel):
+    ref: str = Field(..., alias="$ref")
 
 
 class StringJsonSchema(BaseJsonSchema):
@@ -73,6 +77,7 @@ class NullJsonSchema(BaseJsonSchema):
 
 
 JsonSchema = Union[
+    JsonSchemaRef,
     StringJsonSchema,
     ObjectJsonSchema,
     ArrayJsonSchema,
@@ -81,9 +86,14 @@ JsonSchema = Union[
     BooleanJsonSchema,
     NullJsonSchema,
 ]
-
+StringJsonSchema.update_forward_refs()
 ObjectJsonSchema.update_forward_refs()
 ArrayJsonSchema.update_forward_refs()
+NumberJsonSchema.update_forward_refs()
+IntegerJsonSchema.update_forward_refs()
+BooleanJsonSchema.update_forward_refs()
+NullJsonSchema.update_forward_refs()
+JsonSchemaRef.update_forward_refs()
 
 
 def parse_json_schema(schema: Dict[str, Any]) -> JsonSchema:
