@@ -10,6 +10,7 @@ from models import (
     BooleanJsonSchema,
     ObjectJsonSchema,
     ArrayJsonSchema,
+    IntegerJsonSchema,
     RefJsonSchema,
     AnyOfJsonSchema,
 )
@@ -24,6 +25,7 @@ _SUFFIX = """
 %import common.SIGNED_NUMBER
 %import common.WS_INLINE
 %import common.WS
+%import common.INT
 %ignore WS_INLINE
 %ignore WS
 """
@@ -105,6 +107,8 @@ def create_lark_cfg_for_schema_rec(schema: JsonSchema, context: BuildContext = N
         return create_cfg_for_object(schema, context)
     elif schema.type == SchemaType.ARRAY:
         return create_cfg_for_array(schema, context)
+    elif schema.type == SchemaType.INTEGER:
+        return create_cfg_for_int(schema, context)
     else:
         raise ValueError(f"Unsupported type: {schema.type}")
 
@@ -140,6 +144,10 @@ def create_cfg_for_ref(ref: str, context: BuildContext) -> str:
         return f"{get_title(None, context)}: {context.defined_refs[ref_name]}\n"
     else:
         raise ValueError(f"Unknown reference: {ref_name}")
+
+
+def create_cfg_for_int(schema: IntegerJsonSchema, context: BuildContext) -> str:
+    return f"{get_title(schema, context)}: {if_required(context, 'INT')}\n"
 
 
 def create_cfg_for_string(schema: StringJsonSchema, context: BuildContext) -> str:

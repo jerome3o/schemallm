@@ -81,10 +81,26 @@ def test_union():
         print(parse_tree)
 
 
+def test_int():
+    class Observation(BaseModel):
+        value: int
+
+    schema = parse_json_schema(Observation.schema())
+    cfg = create_lark_cfg_for_schema(schema)
+
+    instance = Observation(value=3).json()
+
+    print(cfg)
+
+    parser = Lark(cfg, parser="lalr")
+    parse_tree = parser.parse(instance)
+
+
 def main():
     # test_mvp_schema()
     # test_optional()
-    test_union()
+    # test_union()
+    test_int()
 
 
 if __name__ == "__main__":
