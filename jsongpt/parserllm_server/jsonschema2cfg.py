@@ -15,6 +15,7 @@ from models import (
 
 _PREFIX = """
 BOOLEAN_VALUE: "true" | "false"
+NULL: "null"
 """
 
 _SUFFIX = """
@@ -33,6 +34,7 @@ class BuildContext(BaseModel):
     path: str = ""
     refs: Optional[Dict[str, JsonSchema]] = {}
     defined_refs: Optional[Dict[str, str]] = {}
+    required: bool = True
 
     class Config:
         arbitrary_types_allowed = True
@@ -45,6 +47,23 @@ class BuildContext(BaseModel):
             refs=self.refs,
             defined_refs=self.defined_refs,
         )
+
+    def update_required(self, required: bool) -> "BuildContext":
+        return BuildContext(
+            pref=self.pref,
+            suff=self.suff,
+            path=self.path,
+            refs=self.refs,
+            defined_refs=self.defined_refs,
+            required=required,
+        )
+
+
+def if_required(context: BuildContext, value: str) -> str:
+    if context.required:
+        return value
+    else:
+        return f"({value}) | NULL"
 
 
 def create_lark_cfg_for_schema(schema: JsonSchema):
@@ -104,15 +123,15 @@ def create_cfg_for_ref(ref: str, context: BuildContext) -> str:
 
 
 def create_cfg_for_string(schema: StringJsonSchema, context: BuildContext) -> str:
-    return f"{get_title(schema, context)}: ESCAPED_STRING\n"
+    return f"{get_title(schema, context)}: {if_required(context, 'ESCAPED_STRING')}\n"
 
 
 def create_cfg_for_number(schema: NumberJsonSchema, context: BuildContext) -> str:
-    return f"{get_title(schema, context)}: SIGNED_NUMBER\n"
+    return f"{get_title(schema, context)}: {if_required(context, 'SIGNED_NUMBER')}\n"
 
 
 def create_cfg_for_boolean(schema: BooleanJsonSchema, context: BuildContext) -> str:
-    return f"{get_title(schema, context)}: BOOLEAN_VALUE\n"
+    return f"{get_title(schema, context)}: {if_required(context, 'BOOLEAN_VALUE')}\n"
 
 
 def create_cfg_for_object(schema: ObjectJsonSchema, context: BuildContext) -> str:
@@ -128,10 +147,14 @@ def create_cfg_for_object(schema: ObjectJsonSchema, context: BuildContext) -> st
         output += f'{full_property_name}_key: "\\"{property_name}\\""\n'
 
         new_context = context.update_path(f"{full_property_name}_value")
+        new_context = new_context.update_required(property_name in schema.required)
+
         output += create_lark_cfg_for_schema_rec(property_schema, new_context)
 
     joiner = ' "," '
-    output += f'{full_object_name}: "{{" {joiner.join(full_property_names)} "}}"\n'
+
+    value = f'"{{" {joiner.join(full_property_names)} "}}"'
+    output += f"{full_object_name}: {if_required(context, value)}\n"
 
     return output
 
@@ -141,9 +164,10 @@ def create_cfg_for_array(schema: ArrayJsonSchema, context: BuildContext):
 
     # assume that the array is homogenous i.e. all items are of the same type, .items is a JsonSchema
     full_title = f"{get_title(schema, context)}"
-    output += f'{full_title}: "[" {full_title}_item ("," {full_title}_item)* "]"\n'
+    value = f'"[" {full_title}_item ("," {full_title}_item)* "]"'
+    output += f"{full_title}: {if_required(context, value)}\n"
 
-    new_context = context.update_path(path=f"{full_title}_item")
+    new_context = context.update_path(path=f"{full_title}_item").update_required(True)
     output += create_lark_cfg_for_schema_rec(schema.items, new_context)
 
     return output

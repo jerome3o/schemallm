@@ -39,12 +39,19 @@ def test_optional():
 
     schema = parse_json_schema(Observation.schema())
     cfg = create_lark_cfg_for_schema(schema)
+
+    print(cfg)
+
     parser = Lark(cfg, parser="lalr")
 
-    instance = Observation(value=3.4).json()
+    instances = [
+        Observation(value=3.4).json(),
+        Observation(reporter="hey", value=3.4).json(),
+    ]
 
-    parse_tree = parser.parse(instance)
-    print(parse_tree)
+    for instance in instances:
+        parse_tree = parser.parse(instance)
+        print(parse_tree)
 
 
 def main():
