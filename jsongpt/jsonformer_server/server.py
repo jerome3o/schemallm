@@ -34,7 +34,7 @@ def completion(r: SchemaCompletionRequest):
         return SchemaCompletionResponse(completion=m())
 
 
-@app.post("/v1/completion/standard")
+@app.post("/v1/completion/standard", response_model=CompletionResponse)
 def completion(r: CompletionRequest):
     pass
 

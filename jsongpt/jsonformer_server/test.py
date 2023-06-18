@@ -1,5 +1,4 @@
 import requests
-from typing import List
 from pydantic import BaseModel
 
 
@@ -22,7 +21,8 @@ def main():
     )
 
     resp = requests.post(
-        "http://localhost:8000/v1/completion/with-schema", json=request.dict()
+        "http://localhost:8000/v1/completion/with-schema",
+        json=request.dict(),
     )
     print(resp.json())
 
