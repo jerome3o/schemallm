@@ -40,7 +40,7 @@ def completion(r: CompletionRequest):
 
 
 print("loading tokenizer")
-tokenizer = AutoTokenizer.from_pretrained(_model, use_fast=True)
+tokenizer = AutoTokenizer.from_pretrained(_model, use_fast=False)
 print("loading model")
 model = AutoModelForCausalLM.from_pretrained(
     _model,
