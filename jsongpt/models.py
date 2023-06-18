@@ -8,9 +8,13 @@ class CompletionRequest(BaseModel):
     stop: Optional[List[str]] = None
 
 
+class CompletionResponse(BaseModel):
+    completion: str
+
+
 class SchemaCompletionRequest(CompletionRequest):
     schema_restriction: dict = None
 
 
-class CompletionResponse(BaseModel):
-    completion: str
+class SchemaCompletionResponse(BaseModel):
+    completion: dict

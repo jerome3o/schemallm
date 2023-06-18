@@ -5,7 +5,12 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from fastapi import FastAPI
 
-from models import CompletionResponse, CompletionRequest, SchemaCompletionRequest
+from models import (
+    CompletionRequest,
+    CompletionResponse,
+    SchemaCompletionRequest,
+    SchemaCompletionResponse,
+)
 
 
 app = FastAPI()
@@ -26,8 +31,7 @@ def completion(r: SchemaCompletionRequest):
             max_number_tokens=100,
             max_string_token_length=1000,
         )
-        output = m()
-        return CompletionResponse(completion=m())
+        return SchemaCompletionResponse(completion=m())
 
 
 @app.post("/v1/completion/standard")
