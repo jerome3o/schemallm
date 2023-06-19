@@ -1,16 +1,32 @@
+import json
 import os
-
-from jsonformer import Jsonformer
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from typing import List, Optional
 
 from fastapi import FastAPI
+from jsonschema2cfg import create_lark_cfg_for_schema
+from lark import Lark
+from models import parse_json_schema
+from parserllm import complete_cf
+from pydantic import BaseModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from models import (
-    CompletionRequest,
-    CompletionResponse,
-    SchemaCompletionRequest,
-    SchemaCompletionResponse,
-)
+
+class CompletionRequest(BaseModel):
+    prompt: str
+    max_tokens: int = 2000
+    stop: Optional[List[str]] = None
+
+
+class CompletionResponse(BaseModel):
+    completion: str
+
+
+class SchemaCompletionRequest(CompletionRequest):
+    schema_restriction: dict = None
+
+
+class SchemaCompletionResponse(BaseModel):
+    completion: dict
 
 
 app = FastAPI()
@@ -21,17 +37,28 @@ _model = os.environ["MODEL_PATH"]
 
 @app.post("/v1/completion/with-schema", response_model=SchemaCompletionResponse)
 def completion(r: SchemaCompletionRequest):
-    if r.schema_restriction is not None:
-        m = Jsonformer(
-            model,
-            tokenizer,
-            r.schema_restriction,
-            prompt=r.prompt,
-            max_array_length=100,
-            max_number_tokens=100,
-            max_string_token_length=1000,
+    # TODO(j.swannack): cache parsers?
+    cfg = create_lark_cfg_for_schema(parse_json_schema(r.schema_restriction))
+    parser = Lark(
+        cfg,
+        parser="lalr",
+        lexer="basic",
+        propagate_positions=True,
+        maybe_placeholders=False,
+        regex=True,
+    )
+    return SchemaCompletionResponse(
+        completion=json.loads(
+            complete_cf(
+                prompt=r.prompt,
+                parser=parser,
+                partial_completion="",
+                tokenizer=tokenizer,
+                model=model,
+                max_new_tokens=r.max_tokens,
+            )
         )
-        return SchemaCompletionResponse(completion=m())
+    )
 
 
 @app.post("/v1/completion/standard", response_model=CompletionResponse)
