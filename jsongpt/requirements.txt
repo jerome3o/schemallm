@@ -36,6 +36,7 @@ nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
 packaging==23.1
+parserllm==0.0.2
 pathspec==0.11.1
 platformdirs==3.5.3
 protobuf==4.23.3
