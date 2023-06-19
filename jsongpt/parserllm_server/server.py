@@ -5,7 +5,7 @@ from typing import List, Optional
 from fastapi import FastAPI
 from jsonschema2cfg import create_lark_cfg_for_schema
 from lark import Lark
-from models import parse_json_schema
+from models import JsonSchema
 from parserllm import complete_cf
 from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -22,7 +22,7 @@ class CompletionResponse(BaseModel):
 
 
 class SchemaCompletionRequest(CompletionRequest):
-    schema_restriction: dict = None
+    schema_restriction: JsonSchema = None
 
 
 class SchemaCompletionResponse(BaseModel):
@@ -38,7 +38,7 @@ _model = os.environ["MODEL_PATH"]
 @app.post("/v1/completion/with-schema", response_model=SchemaCompletionResponse)
 def completion(r: SchemaCompletionRequest):
     # TODO(j.swannack): cache parsers?
-    cfg = create_lark_cfg_for_schema(parse_json_schema(r.schema_restriction))
+    cfg = create_lark_cfg_for_schema(r.schema_restriction)
     parser = Lark(
         cfg,
         parser="lalr",
@@ -56,6 +56,7 @@ def completion(r: SchemaCompletionRequest):
                 tokenizer=tokenizer,
                 model=model,
                 max_new_tokens=r.max_tokens,
+                debug=True,
             )
         )
     )
@@ -79,4 +80,7 @@ if __name__ == "__main__":
     import logging
 
     logging.basicConfig(level=logging.INFO)
-    print("hey")
+
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)

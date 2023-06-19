@@ -18,14 +18,14 @@ from models import (
 _PREFIX = """
 BOOLEAN_VALUE: "true" | "false"
 NULL: "null"
+SIGNED_NUMBER: /-?\d+(\.\d{1,4})?/
 """
 
 _SUFFIX = """
 %import common.ESCAPED_STRING
-%import common.SIGNED_NUMBER
 %import common.WS_INLINE
 %import common.WS
-%import common.INT
+%import common.SIGNED_INT
 %ignore WS_INLINE
 %ignore WS
 """
@@ -147,7 +147,7 @@ def create_cfg_for_ref(ref: str, context: BuildContext) -> str:
 
 
 def create_cfg_for_int(schema: IntegerJsonSchema, context: BuildContext) -> str:
-    return f"{get_title(schema, context)}: {if_required(context, 'INT')}\n"
+    return f"{get_title(schema, context)}: {if_required(context, 'SIGNED_INT')}\n"
 
 
 def create_cfg_for_string(schema: StringJsonSchema, context: BuildContext) -> str:

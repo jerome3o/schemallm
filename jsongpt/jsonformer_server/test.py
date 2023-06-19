@@ -12,7 +12,7 @@ class Details(BaseModel):
 
 def main():
     prompt = (
-        "Oh boy, it's cold outside! it must be winter and about 13 degrees celsius."
+        "Oh boy, it's cold outside! it must be winter and about 13.51 degrees celsius.\nJSON Object describing environment:\n"
     )
     request = SchemaCompletionRequest(
         prompt=prompt,
