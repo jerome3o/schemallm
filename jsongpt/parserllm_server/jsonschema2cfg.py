@@ -18,7 +18,7 @@ from models import (
 _PREFIX = """
 BOOLEAN_VALUE: "true" | "false"
 NULL: "null"
-SIGNED_NUMBER: /-?\d+(\.\d{1,4})?/
+SIGNED_NUMBER: /-?\d+(\.\d{1,2})?/
 """
 
 _SUFFIX = """
