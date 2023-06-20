@@ -65,11 +65,11 @@ def completion(r: SchemaCompletionRequest):
 @app.post("/v1/completion/standard", response_model=CompletionResponse)
 def completion(r: CompletionRequest):
     return SchemaCompletionResponse(
-        completion=generate(model, r)
+        completion=complete_standard(model, r)
     )
 
 
-def generate(model, completion_request: CompletionRequest) -> str:
+def complete_standard(model, completion_request: CompletionRequest) -> str:
     # TODO(j.swannack): Add normal generation here
     pass
 
