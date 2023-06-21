@@ -46,8 +46,22 @@ class StopOnTokens(StoppingCriteria):
 
 @app.post("/v1/completion/with-schema", response_model=SchemaCompletionResponse)
 def completion(r: SchemaCompletionRequest):
+    return complete_with_schema(model, tokenizer, r)
+
+
+@app.post("/v1/completion/standard", response_model=CompletionResponse)
+def completion(r: CompletionRequest):
+    return complete_standard(model, tokenizer, r)
+
+
+@torch.inference_mode()
+def complete_with_schema(
+    model: AutoModelForCausalLM,
+    tokenizer: AutoTokenizer,
+    completion_request: SchemaCompletionRequest,
+) -> SchemaCompletionResponse:
+    cfg = create_lark_cfg_for_schema(completion_request.schema_restriction)
     # TODO(j.swannack): cache parsers?
-    cfg = create_lark_cfg_for_schema(r.schema_restriction)
     parser = Lark(
         cfg,
         parser="lalr",
@@ -59,21 +73,16 @@ def completion(r: SchemaCompletionRequest):
     return SchemaCompletionResponse(
         completion=json.loads(
             complete_cf(
-                prompt=r.prompt,
+                prompt=completion_request.prompt,
                 parser=parser,
                 partial_completion="",
                 tokenizer=tokenizer,
                 model=model,
-                max_new_tokens=r.max_tokens,
+                max_new_tokens=completion_request.max_tokens,
                 debug=True,
             )
         )
     )
-
-
-@app.post("/v1/completion/standard", response_model=CompletionResponse)
-def completion(r: CompletionRequest):
-    return CompletionResponse(completion=complete_standard(model, tokenizer, r))
 
 
 @torch.inference_mode()
@@ -81,7 +90,7 @@ def complete_standard(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
     completion_request: CompletionRequest,
-) -> str:
+) -> CompletionResponse:
     # TODO(j.swannack): Add proper stop logic
     stop_token_list = [1, 2]
 
@@ -111,7 +120,9 @@ def complete_standard(
         tokens = tokens[:-1]
 
     # add more outputs if needed
-    return tokenizer.decode(tokens, skip_special_tokens=True)
+    return CompletionResponse(
+        completion=tokenizer.decode(tokens, skip_special_tokens=True)
+    )
 
 
 print("loading tokenizer")
