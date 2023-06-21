@@ -8,6 +8,7 @@ class CompletionRequest(BaseModel):
     prompt: str
     max_tokens: int = 2000
     stop: Optional[List[str]] = None
+    temperature: float = 0.7
 
 
 class CompletionResponse(BaseModel):

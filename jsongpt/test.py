@@ -11,9 +11,7 @@ class Details(BaseModel):
 
 
 def test_with_schema():
-    prompt = (
-        "Oh boy, it's cold outside! it must be winter and about 13.51 degrees celsius.\nJSON Object describing environment:\n"
-    )
+    prompt = "Oh boy, it's cold outside! it must be winter and about 13.51 degrees celsius.\nJSON Object describing environment:\n"
     request = SchemaCompletionRequest(
         prompt=prompt,
         max_tokens=2000,
@@ -28,10 +26,10 @@ def test_with_schema():
 
 
 def test_standard_completion():
-    prompt = "A short story about frogs:\n"
+    prompt = "Favourite colour:\n"
     request = CompletionRequest(
         prompt=prompt,
-        max_tokens=2000,
+        max_tokens=10,
     )
     resp = requests.post(
         "http://localhost:8000/v1/completion/standard",
@@ -43,7 +41,6 @@ def test_standard_completion():
 def main():
     # test_with_schema()
     test_standard_completion()
-
 
 
 if __name__ == "__main__":
