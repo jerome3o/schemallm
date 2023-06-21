@@ -1,7 +1,7 @@
 import json
 from pydantic import BaseModel
 from typing import List, Dict, Optional
-from models import (
+from jsongpt.models.jsonschema import (
     parse_json_schema,
     JsonSchema,
     SchemaType,
