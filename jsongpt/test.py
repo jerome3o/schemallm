@@ -2,7 +2,11 @@ import requests
 from pydantic import BaseModel
 
 
-from jsongpt.models.api import SchemaCompletionRequest, CompletionRequest
+from jsongpt.models.api import (
+    SchemaCompletionRequest,
+    CompletionRequest,
+    CfgCompletionRequest,
+)
 
 
 class Details(BaseModel):
@@ -38,9 +42,30 @@ def test_standard_completion():
     print(resp.json())
 
 
+def test_with_cfg():
+    prompt = "Favourite colour:\n"
+
+    cfg = """
+    start: value
+    value: "red" | "blue" | "orange"
+    """
+
+    request = CfgCompletionRequest(
+        prompt=prompt,
+        cfg=cfg,
+        max_tokens=10,
+    )
+    resp = requests.post(
+        "http://localhost:8000/v1/completion/with-cfg",
+        json=request.dict(),
+    )
+    print(resp.json())
+
+
 def main():
     # test_with_schema()
-    test_standard_completion()
+    # test_standard_completion()
+    test_with_cfg()
 
 
 if __name__ == "__main__":
