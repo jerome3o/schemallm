@@ -2,7 +2,7 @@ import requests
 from pydantic import BaseModel
 
 
-from models import SchemaCompletionRequest
+from jsongpt.models.api import SchemaCompletionRequest, CompletionRequest
 
 
 class Details(BaseModel):
@@ -10,7 +10,7 @@ class Details(BaseModel):
     temperature_celsius: float
 
 
-def main():
+def test_with_schema():
     prompt = (
         "Oh boy, it's cold outside! it must be winter and about 13.51 degrees celsius.\nJSON Object describing environment:\n"
     )
@@ -25,6 +25,25 @@ def main():
         json=request.dict(),
     )
     print(resp.json())
+
+
+def test_standard_completion():
+    prompt = "A short story about frogs:\n"
+    request = CompletionRequest(
+        prompt=prompt,
+        max_tokens=2000,
+    )
+    resp = requests.post(
+        "http://localhost:8000/v1/completion/standard",
+        json=request.dict(),
+    )
+    print(resp.json())
+
+
+def main():
+    # test_with_schema()
+    test_standard_completion()
+
 
 
 if __name__ == "__main__":
