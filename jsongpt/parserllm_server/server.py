@@ -1,33 +1,18 @@
 import json
 import os
-from typing import List, Optional
 
 from fastapi import FastAPI
-from jsonschema2cfg import create_lark_cfg_for_schema
 from lark import Lark
-from models import JsonSchema
 from parserllm import complete_cf
-from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-
-class CompletionRequest(BaseModel):
-    prompt: str
-    max_tokens: int = 2000
-    stop: Optional[List[str]] = None
-
-
-class CompletionResponse(BaseModel):
-    completion: str
-
-
-class SchemaCompletionRequest(CompletionRequest):
-    schema_restriction: JsonSchema = None
-
-
-class SchemaCompletionResponse(BaseModel):
-    completion: dict
-
+from jsongpt.parserllm_server.jsonschema2cfg import create_lark_cfg_for_schema
+from jsongpt.models.api import (
+    CompletionRequest,
+    CompletionResponse,
+    SchemaCompletionRequest,
+    SchemaCompletionResponse,
+)
 
 app = FastAPI()
 
@@ -64,13 +49,12 @@ def completion(r: SchemaCompletionRequest):
 
 @app.post("/v1/completion/standard", response_model=CompletionResponse)
 def completion(r: CompletionRequest):
-    return SchemaCompletionResponse(
-        completion=complete_standard(model, r)
-    )
+    return SchemaCompletionResponse(completion=complete_standard(model, r))
 
 
 def complete_standard(model, completion_request: CompletionRequest) -> str:
     # TODO(j.swannack): Add normal generation here
+    print(model)
     pass
 
 

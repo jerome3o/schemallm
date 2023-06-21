@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field, parse_obj_as
 from typing import Optional, Any, Dict, Union, List
 from enum import Enum
+
+from pydantic import BaseModel, Field, parse_obj_as
 
 
 class SchemaType(str, Enum):
