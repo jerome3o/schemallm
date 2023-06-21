@@ -118,6 +118,7 @@ def complete_with_schema(
     )
 
 
+# TODO(j.swannack): move inference code to a separate module
 @torch.inference_mode()
 def complete_standard(
     model: AutoModelForCausalLM,
