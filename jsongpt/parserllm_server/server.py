@@ -158,6 +158,8 @@ def complete_standard(
     )
 
 
+# TODO(j.swannack): Figure out how to load the model and tokenizer outside of the module scope, but
+# still have it be available when running with uvicorn.
 print("loading tokenizer")
 tokenizer = AutoTokenizer.from_pretrained(_model, use_fast=False)
 print("loading model")
