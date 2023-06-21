@@ -21,3 +21,7 @@ class SchemaCompletionRequest(CompletionRequest):
 
 class SchemaCompletionResponse(BaseModel):
     completion: dict
+
+
+class CfgCompletionRequest(CompletionRequest):
+    cfg: str

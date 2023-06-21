@@ -18,6 +18,7 @@ from jsongpt.models.api import (
     CompletionResponse,
     SchemaCompletionRequest,
     SchemaCompletionResponse,
+    CfgCompletionRequest,
 )
 
 app = FastAPI()
@@ -44,6 +45,11 @@ class StopOnTokens(StoppingCriteria):
         return False
 
 
+@app.post("/v1/completion/with-cfg", response_model=CompletionResponse)
+def completion(r: CfgCompletionRequest):
+    return complete_with_cfg(model, tokenizer, r)
+
+
 @app.post("/v1/completion/with-schema", response_model=SchemaCompletionResponse)
 def completion(r: SchemaCompletionRequest):
     return complete_with_schema(model, tokenizer, r)
@@ -52,6 +58,33 @@ def completion(r: SchemaCompletionRequest):
 @app.post("/v1/completion/standard", response_model=CompletionResponse)
 def completion(r: CompletionRequest):
     return complete_standard(model, tokenizer, r)
+
+
+@torch.inference_mode()
+def complete_with_cfg(
+    model: AutoModelForCausalLM,
+    tokenizer: AutoTokenizer,
+    completion_request: CfgCompletionRequest,
+) -> CompletionResponse:
+    parser = Lark(
+        completion_request.cfg,
+        parser="lalr",
+        lexer="basic",
+        propagate_positions=True,
+        maybe_placeholders=False,
+        regex=True,
+    )
+    return CompletionResponse(
+        completion=complete_cf(
+            prompt=completion_request.prompt,
+            parser=parser,
+            partial_completion="",
+            tokenizer=tokenizer,
+            model=model,
+            max_new_tokens=completion_request.max_tokens,
+            debug=True,
+        )
+    )
 
 
 @torch.inference_mode()
