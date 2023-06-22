@@ -23,6 +23,11 @@ from jsongpt.models.api import (
 
 app = FastAPI()
 
+# Add streaming endpoints for all of these
+# https://fastapi.tiangolo.com/advanced/custom-response/
+# https://github.com/lm-sys/FastChat/blob/1af93d75aa6e43b13fa0170127456e8205ef6f34/fastchat/serve/model_worker.py#L357
+# This is a nice to have, but would be really cool to see the completion as it's being generated
+# conforming to the schema
 
 _model = os.environ["MODEL_PATH"]
 
