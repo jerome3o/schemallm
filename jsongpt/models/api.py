@@ -25,3 +25,7 @@ class SchemaCompletionResponse(BaseModel):
 
 class CfgCompletionRequest(CompletionRequest):
     cfg: str
+
+
+class RegexCompletionRequest(CompletionRequest):
+    regex: str

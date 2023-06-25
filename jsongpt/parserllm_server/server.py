@@ -5,6 +5,7 @@ import torch
 from fastapi import FastAPI
 from lark import Lark
 from parserllm import complete_cf
+from rellm import complete_re
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -58,6 +59,11 @@ def completion(r: CfgCompletionRequest):
 @app.post("/v1/completion/with-schema", response_model=SchemaCompletionResponse)
 def completion(r: SchemaCompletionRequest):
     return complete_with_schema(model, tokenizer, r)
+
+
+@app.post("/v1/completion/with-regex", response_model=CompletionResponse)
+def completion(r: CompletionRequest):
+    return complete_with_regex(model, tokenizer, r)
 
 
 @app.post("/v1/completion/standard", response_model=CompletionResponse)
@@ -119,6 +125,24 @@ def complete_with_schema(
                 max_new_tokens=completion_request.max_tokens,
                 debug=True,
             )
+        )
+    )
+
+
+@torch.inference_mode()
+def complete_with_regex(
+    model: AutoModelForCausalLM,
+    tokenizer: AutoTokenizer,
+    completion_request: CompletionRequest,
+) -> SchemaCompletionResponse:
+    return CompletionResponse(
+        completion=complete_re(
+            prompt=completion_request.prompt,
+            pattern=completion_request.regex,
+            tokenizer=tokenizer,
+            model=model,
+            max_new_tokens=completion_request.max_tokens,
+            debug=True,
         )
     )
 
