@@ -43,12 +43,11 @@ def test_standard_completion():
 
 
 def test_with_cfg():
-    prompt = "Favourite number:\n"
+    prompt = "Favourite colour:\n"
 
     cfg = """
-    %import common.SIGNED_NUMBER
     start: value
-    value: SIGNED_NUMBER
+    value: "red" | "green" | "blue"
     """
 
     request = CfgCompletionRequest(
