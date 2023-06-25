@@ -62,10 +62,32 @@ def test_with_cfg():
     print(resp.json())
 
 
+def test_with_number():
+    prompt = "Repeat after me: 13.512\nReponse: "
+
+    cfg = """
+    %import common.NUMBER
+    start: value
+    value: NUMBER
+    """
+
+    request = CfgCompletionRequest(
+        prompt=prompt,
+        cfg=cfg,
+        max_tokens=10,
+    )
+    resp = requests.post(
+        "http://localhost:8000/v1/completion/with-cfg",
+        json=request.dict(),
+    )
+    print(resp.json())
+
+
 def main():
     # test_with_schema()
     # test_standard_completion()
-    test_with_cfg()
+    # test_with_cfg()
+    test_with_number()
 
 
 if __name__ == "__main__":
