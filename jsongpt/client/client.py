@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from requests import get
 from jsongpt.models.api import (
     CompletionRequest,
     CompletionResponse,
@@ -11,6 +12,7 @@ from jsongpt.models.api import (
 )
 
 
+# TODO(j.swannack): error handling
 class JsonGptClient(BaseModel):
     base_url: str = "http://localhost:8000"
 
@@ -18,22 +20,38 @@ class JsonGptClient(BaseModel):
         self,
         request: CompletionRequest,
     ) -> CompletionResponse:
-        raise NotImplementedError
+        response = get(
+            self.base_url + "/v1/completion/standard",
+            json=request.json(),
+        )
+        return CompletionResponse.parse_obj(response.json())
 
     def completion_with_cfg(
         self,
         request: CfgCompletionRequest,
     ) -> CfgCompletionResponse:
-        raise NotImplementedError
+        response = get(
+            self.base_url + "/v1/completion/with-cfg",
+            json=request.json(),
+        )
+        return CfgCompletionResponse.parse_obj(response.json())
 
     def completion_with_schema(
         self,
         request: SchemaCompletionRequest,
     ) -> SchemaCompletionResponse:
-        raise NotImplementedError
+        response = get(
+            self.base_url + "/v1/completion/with-schema",
+            json=request.json(),
+        )
+        return SchemaCompletionResponse.parse_obj(response.json())
 
     def completion_with_regex(
         self,
         request: RegexCompletionRequest,
     ) -> RegexCompletionResponse:
-        raise NotImplementedError
+        response = get(
+            self.base_url + "/v1/completion/with-regex",
+            json=request.json(),
+        )
+        return RegexCompletionResponse.parse_obj(response.json())
