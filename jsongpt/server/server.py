@@ -13,7 +13,7 @@ from transformers import (
     StoppingCriteria,
 )
 
-from jsongpt.parserllm_server.jsonschema2cfg import create_lark_cfg_for_schema
+from jsongpt.server.jsonschema2cfg import create_lark_cfg_for_schema
 from jsongpt.models.api import (
     CompletionRequest,
     CompletionResponse,

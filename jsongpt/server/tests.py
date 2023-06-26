@@ -1,8 +1,8 @@
 from typing import List, Optional, Union
 from pydantic import BaseModel
-from jsonschema2cfg import create_lark_cfg_for_schema
 from lark import Lark
-from models import JsonSchema, parse_json_schema
+from jsongpt.server.jsonschema2cfg import create_lark_cfg_for_schema
+from jsongpt.models.jsonschema import parse_json_schema
 
 
 def test_mvp_schema():
