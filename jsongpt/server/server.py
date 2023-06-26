@@ -22,7 +22,10 @@ from jsongpt.models.api import (
     CfgCompletionRequest,
 )
 
-app = FastAPI()
+app = FastAPI(
+    title="Jsongpt",
+    description="An API for generating structured output from LLMs",
+)
 
 # Add streaming endpoints for all of these
 # https://fastapi.tiangolo.com/advanced/custom-response/
@@ -188,22 +191,20 @@ def complete_standard(
     )
 
 
-# TODO(j.swannack): Figure out how to load the model and tokenizer outside of the module scope, but
-# still have it be available when running with uvicorn.
-print("loading tokenizer")
-tokenizer = AutoTokenizer.from_pretrained(_model, use_fast=False)
-print("loading model")
-model = AutoModelForCausalLM.from_pretrained(
-    _model,
-    load_in_8bit=True,
-    device_map="auto",
-)
-
 if __name__ == "__main__":
     import logging
+    import uvicorn
 
     logging.basicConfig(level=logging.INFO)
 
-    import uvicorn
-
+    # # TODO(j.swannack): Figure out how to load the model and tokenizer outside of the module scope, but
+    # # still have it be available when running with uvicorn.
+    print("loading tokenizer")
+    tokenizer = AutoTokenizer.from_pretrained(_model, use_fast=False)
+    print("loading model")
+    model = AutoModelForCausalLM.from_pretrained(
+        _model,
+        load_in_8bit=True,
+        device_map="auto",
+    )
     uvicorn.run(app, host="0.0.0.0", port=8000)
