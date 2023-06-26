@@ -20,6 +20,9 @@ from jsongpt.models.api import (
     SchemaCompletionRequest,
     SchemaCompletionResponse,
     CfgCompletionRequest,
+    CfgCompletionResponse,
+    RegexCompletionRequest,
+    RegexCompletionResponse,
 )
 
 app = FastAPI(
@@ -54,23 +57,23 @@ class StopOnTokens(StoppingCriteria):
         return False
 
 
-@app.post("/v1/completion/with-cfg", response_model=CompletionResponse)
-def completion(r: CfgCompletionRequest):
+@app.post("/v1/completion/with-cfg", response_model=CfgCompletionResponse)
+def cfg_endpoint(r: CfgCompletionRequest):
     return complete_with_cfg(model, tokenizer, r)
 
 
 @app.post("/v1/completion/with-schema", response_model=SchemaCompletionResponse)
-def completion(r: SchemaCompletionRequest):
+def schema_endpoint(r: SchemaCompletionRequest):
     return complete_with_schema(model, tokenizer, r)
 
 
-@app.post("/v1/completion/with-regex", response_model=CompletionResponse)
-def completion(r: CompletionRequest):
+@app.post("/v1/completion/with-regex", response_model=RegexCompletionResponse)
+def regex_endpoint(r: RegexCompletionRequest):
     return complete_with_regex(model, tokenizer, r)
 
 
 @app.post("/v1/completion/standard", response_model=CompletionResponse)
-def completion(r: CompletionRequest):
+def standard_endpoint(r: CompletionRequest):
     return complete_standard(model, tokenizer, r)
 
 
@@ -136,9 +139,9 @@ def complete_with_schema(
 def complete_with_regex(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
-    completion_request: CompletionRequest,
-) -> SchemaCompletionResponse:
-    return CompletionResponse(
+    completion_request: RegexCompletionRequest,
+) -> RegexCompletionResponse:
+    return RegexCompletionResponse(
         completion=complete_re(
             prompt=completion_request.prompt,
             pattern=completion_request.regex,

@@ -27,5 +27,13 @@ class CfgCompletionRequest(CompletionRequest):
     cfg: str
 
 
+class CfgCompletionResponse(CompletionResponse):
+    pass
+
+
 class RegexCompletionRequest(CompletionRequest):
     regex: str
+
+
+class RegexCompletionResponse(CompletionResponse):
+    pass
