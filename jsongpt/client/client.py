@@ -70,3 +70,17 @@ class JsonGptClient(BaseModel):
             request,
             RegexCompletionResponse,
         )
+
+    def completion_with_pydantic(
+        self,
+        prompt: str,
+        model: Type[BaseModel],
+    ) -> CompletionResponse:
+        # TODO(j.swannack): add in other generation options somehow
+        resp = self.completion_with_schema(
+            SchemaCompletionRequest(
+                prompt=prompt,
+                schema=model.schema(),
+            )
+        )
+        return model.parse_obj(resp.completion)
