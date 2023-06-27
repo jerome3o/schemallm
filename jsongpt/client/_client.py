@@ -1,6 +1,6 @@
 from typing import Type, TypeVar
 from pydantic import BaseModel
-from requests import get
+from requests import post
 from jsongpt.models.api import (
     CompletionRequest,
     CompletionResponse,
@@ -29,7 +29,7 @@ class JsonGptClient(BaseModel):
         request: BaseModel,
         response_model: Type[T],
     ) -> T:
-        response = get(
+        response = post(
             self.base_url + endpoint,
             json=request.json(),
         )
