@@ -86,7 +86,7 @@ class JsonGptClient(BaseModel):
     ) -> SchemaCompletionResponse:
         request = SchemaCompletionRequest(
             prompt=prompt,
-            schema=schema,
+            schema_restriction=schema,
             max_tokens=max_tokens,
             temperature=temperature,
             stop=stop,
