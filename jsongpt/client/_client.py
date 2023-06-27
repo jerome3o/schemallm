@@ -31,7 +31,7 @@ class JsonGptClient(BaseModel):
     ) -> T:
         response = post(
             self.base_url + endpoint,
-            json=request.json(),
+            json=request.dict(),
         )
         # TODO(j.swannack): error handling
         return response_model.parse_obj(response.json())
