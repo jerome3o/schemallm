@@ -1,3 +1,4 @@
+from typing import Type, TypeVar
 from pydantic import BaseModel
 from requests import get
 from jsongpt.models.api import (
@@ -11,47 +12,61 @@ from jsongpt.models.api import (
     SchemaCompletionResponse,
 )
 
+T = TypeVar("T", bound=BaseModel)
 
-# TODO(j.swannack): error handling
+
 class JsonGptClient(BaseModel):
     base_url: str = "http://localhost:8000"
+
+    def _request(
+        self,
+        endpoint: str,
+        request: BaseModel,
+        response_model: Type[T],
+    ) -> T:
+        response = get(
+            self.base_url + endpoint,
+            json=request.json(),
+        )
+        # TODO(j.swannack): error handling
+        return response_model.parse_obj(response.json())
 
     def completion(
         self,
         request: CompletionRequest,
     ) -> CompletionResponse:
-        response = get(
-            self.base_url + "/v1/completion/standard",
-            json=request.json(),
+        return self._request(
+            "/v1/completion/standard",
+            request,
+            CompletionResponse,
         )
-        return CompletionResponse.parse_obj(response.json())
 
     def completion_with_cfg(
         self,
         request: CfgCompletionRequest,
     ) -> CfgCompletionResponse:
-        response = get(
-            self.base_url + "/v1/completion/with-cfg",
-            json=request.json(),
+        return self._request(
+            "/v1/completion/with-cfg",
+            request,
+            CfgCompletionResponse,
         )
-        return CfgCompletionResponse.parse_obj(response.json())
 
     def completion_with_schema(
         self,
         request: SchemaCompletionRequest,
     ) -> SchemaCompletionResponse:
-        response = get(
-            self.base_url + "/v1/completion/with-schema",
-            json=request.json(),
+        return self._request(
+            "/v1/completion/with-schema",
+            request,
+            SchemaCompletionResponse,
         )
-        return SchemaCompletionResponse.parse_obj(response.json())
 
     def completion_with_regex(
         self,
         request: RegexCompletionRequest,
     ) -> RegexCompletionResponse:
-        response = get(
-            self.base_url + "/v1/completion/with-regex",
-            json=request.json(),
+        return self._request(
+            "/v1/completion/with-regex",
+            request,
+            RegexCompletionResponse,
         )
-        return RegexCompletionResponse.parse_obj(response.json())
