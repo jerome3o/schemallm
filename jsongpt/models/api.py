@@ -3,12 +3,15 @@ from pydantic import BaseModel
 
 from jsongpt.models.jsonschema import JsonSchema
 
+DEFAULT_MAX_TOKENS = 2000
+DEFAULT_TEMPERATURE = 0.7
+
 
 class CompletionRequest(BaseModel):
     prompt: str
-    max_tokens: int = 2000
+    max_tokens: int = DEFAULT_MAX_TOKENS
+    temperature: float = DEFAULT_TEMPERATURE
     stop: Optional[List[str]] = None
-    temperature: float = 0.7
 
 
 class CompletionResponse(BaseModel):
