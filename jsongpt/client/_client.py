@@ -36,7 +36,7 @@ class JsonGptClient(BaseModel):
         # TODO(j.swannack): error handling
         return response_model.parse_obj(response.json())
 
-    def completion(
+    def completion_standard(
         self,
         prompt: str,
         max_tokens: int = DEFAULT_MAX_TOKENS,
