@@ -18,9 +18,14 @@ def main():
         device_map="auto",
     )
 
-    prompt = "Repeat after me: 14 is the best number.\nResonse:"
+    prompt = "Repeat after me: 14.000 is the best number.\nResonse:"
     response = complete_re(
-        prompt, regex.compile("\d+"), tokenizer=tokenizer, model=model, max_tokens=20
+        prompt,
+        regex.compile(r"\d+\.0\d+{4, 7}"),
+        tokenizer=tokenizer,
+        model=model,
+        max_new_tokens=3,
+        debug=True,
     )
     print(response)
     print(response)
