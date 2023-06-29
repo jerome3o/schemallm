@@ -9,7 +9,7 @@ from langchain.callbacks.manager import (
 from pydantic import BaseModel, EmailStr
 from googleapiclient.discovery import Resource
 
-from homegpt.google_services import send_email
+from homellm.google_services import send_email
 
 
 class SendEmailParameters(BaseModel):

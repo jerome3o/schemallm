@@ -11,7 +11,7 @@ def generate_random_numbers(n: int, lower: int, upper: int) -> list[int]:
 
 
 def main():
-    from homegpt.llm import get_llm_chat
+    from homellm.llm import get_llm_chat
 
     tools = [generate_random_numbers]
     llm = get_llm_chat()

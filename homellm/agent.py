@@ -119,7 +119,7 @@ def get_agent(llm: BaseLLM, tools: List[Tool]) -> AgentExecutor:
 
 
 def main():
-    from homegpt.llm import get_llm_chat
+    from homellm.llm import get_llm_chat
 
     print(template)
 

@@ -2,7 +2,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.chains import SequentialChain
 
-from homegpt.llm import get_llm
+from homellm.llm import get_llm
 
 llm = get_llm()
 

@@ -1,10 +1,10 @@
 import os
 import base64
 
-from homegpt.google_services import initialize_services
-from homegpt.agent import get_agent
-from homegpt.llm import get_llm
-from homegpt.tools.email import SendEmailTool
+from homellm.google_services import initialize_services
+from homellm.agent import get_agent
+from homellm.llm import get_llm
+from homellm.tools.email import SendEmailTool
 
 _RECIPIENT = os.environ["RECIPIENT_EMAIL"]
 
