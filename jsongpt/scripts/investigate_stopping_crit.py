@@ -46,7 +46,6 @@ def main():
     response = complete_cf(
         prompt=prompt,
         parser=parser,
-        partial_completion=prompt,
         tokenizer=tokenizer,
         model=model,
         max_new_tokens=30,
