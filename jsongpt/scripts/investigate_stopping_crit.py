@@ -41,11 +41,12 @@ def main():
     cfg = create_lark_cfg_for_schema(PersonalDetails.schema())
     parser = Lark(cfg, start="start", parser="lalr")
 
-    prompt = "Tell me about yourself, in JSON format!:\n"
+    prompt = "You're steve, a 30yo. Tell me about yourself, in JSON format!:\n"
 
     response = complete_cf(
         prompt=prompt,
         parser=parser,
+        partial_completion="",
         tokenizer=tokenizer,
         model=model,
         max_new_tokens=30,
