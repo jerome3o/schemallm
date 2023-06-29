@@ -99,9 +99,9 @@ def test_int():
 
 
 def main():
-    # test_mvp_schema()
-    # test_optional()
-    # test_union()
+    test_mvp_schema()
+    test_optional()
+    test_union()
     test_int()
 
 
