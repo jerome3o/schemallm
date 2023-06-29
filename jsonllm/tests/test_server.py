@@ -2,7 +2,7 @@ import requests
 from pydantic import BaseModel
 
 
-from jsongpt.models.api import (
+from jsonllm.models.api import (
     SchemaCompletionRequest,
     CompletionRequest,
     CfgCompletionRequest,

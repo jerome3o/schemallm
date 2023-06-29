@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
-from jsongpt.models.jsonschema import JsonSchema
+from jsonllm.models.jsonschema import JsonSchema
 
 DEFAULT_MAX_TOKENS = 2000
 DEFAULT_TEMPERATURE = 0.7

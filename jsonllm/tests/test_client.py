@@ -1,9 +1,9 @@
-from jsongpt.client import JsonGptClient
+from jsonllm.client import JsonLlmClient
 from pydantic import BaseModel
 
 
 def main():
-    client = JsonGptClient()
+    client = JsonLlmClient()
     print(client.completion_standard("Hello, world!", max_tokens=10))
 
     class PersonalDetails(BaseModel):

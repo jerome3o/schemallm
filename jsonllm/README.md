@@ -1,4 +1,4 @@
-# JSONGPT
+# JsonLLM
 
 This is an attempt at making an LLM completion API that allows for submition of a JSON Schema along side your prompt, that forces the result to conform to the schema.
 

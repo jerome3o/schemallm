@@ -1,7 +1,7 @@
 from typing import Type, TypeVar
 from pydantic import BaseModel
 from requests import post
-from jsongpt.models.api import (
+from jsonllm.models.api import (
     CompletionRequest,
     CompletionResponse,
     CfgCompletionRequest,
@@ -20,7 +20,7 @@ T = TypeVar("T", bound=BaseModel)
 # request/response models
 
 
-class JsonGptClient(BaseModel):
+class JsonLlmClient(BaseModel):
     base_url: str = "http://localhost:8000"
 
     def _request(

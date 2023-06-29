@@ -13,8 +13,8 @@ from transformers import (
     StoppingCriteria,
 )
 
-from jsongpt.server.jsonschema2cfg import create_lark_cfg_for_schema
-from jsongpt.models.api import (
+from jsonllm.server.jsonschema2cfg import create_lark_cfg_for_schema
+from jsonllm.models.api import (
     CompletionRequest,
     CompletionResponse,
     SchemaCompletionRequest,
@@ -26,7 +26,7 @@ from jsongpt.models.api import (
 )
 
 app = FastAPI(
-    title="Jsongpt",
+    title="JsonLLM",
     description="An API for generating structured output from LLMs",
 )
 
