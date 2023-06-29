@@ -1,6 +1,6 @@
 import json
 from pydantic import BaseModel
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union
 from jsongpt.models.jsonschema import (
     parse_json_schema,
     JsonSchema,
@@ -69,7 +69,10 @@ def if_required(context: BuildContext, value: str) -> str:
         return f"({value}) | NULL"
 
 
-def create_lark_cfg_for_schema(schema: JsonSchema):
+def create_lark_cfg_for_schema(schema: Union[JsonSchema, dict]):
+    if isinstance(schema, dict):
+        schema = parse_json_schema(schema)
+
     inner = create_lark_cfg_for_schema_rec(
         schema,
         BuildContext(
