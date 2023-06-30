@@ -32,7 +32,11 @@ class JsonSchemaLLM(LLM):
     ) -> str:
         if stop is not None:
             raise ValueError("stop kwargs are not permitted.")
-        return prompt[: self.n]
+        self.api_client.completion_with_schema(
+            prompt=prompt,
+            schema=self.schema_restriction.dict(),
+            stop=stop,
+        )
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
@@ -53,7 +57,10 @@ def main():
 
     # TODO(j.swannack): make this more succinct, allow input of pydantic model?
     llm = JsonSchemaLLM(schema_restriction=parse_json_schema(PersonalDetails.schema()))
-    print(llm)
+    result = llm(
+        "Tell me about yourself, in JSON format!:\n",
+    )
+    print(result)
 
 
 if __name__ == "__main__":
