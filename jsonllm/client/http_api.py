@@ -15,13 +15,14 @@ from jsonllm.models.api import (
 )
 
 T = TypeVar("T", bound=BaseModel)
+DEFAULT_BASE_URL = "http://localhost:8000"
 
 # TODO(j.swannack): find a way to reduce duplication of arguments so it's easier to change the
 # request/response models
 
 
 class JsonLlmClient(BaseModel):
-    base_url: str = "http://localhost:8000"
+    base_url: str = DEFAULT_BASE_URL
 
     def _request(
         self,
