@@ -2,6 +2,7 @@
 # https://python.langchain.com/docs/modules/model_io/models/llms/how_to/custom_llm
 
 from typing import Any, List, Mapping, Optional
+import json
 
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
@@ -30,13 +31,12 @@ class JsonSchemaLLM(LLM):
         stop: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
     ) -> str:
-        if stop is not None:
-            raise ValueError("stop kwargs are not permitted.")
-        self.api_client.completion_with_schema(
+        result_obj = self.api_client.completion_with_schema(
             prompt=prompt,
             schema=self.schema_restriction.dict(),
             stop=stop,
         )
+        return json.dumps(result_obj.dict())
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
@@ -52,7 +52,6 @@ def main():
 
     class PersonalDetails(BaseModel):
         name: str
-        age: int
         location: str
 
     # TODO(j.swannack): make this more succinct, allow input of pydantic model?
