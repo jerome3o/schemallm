@@ -1,1 +1,1 @@
-from ._client import JsonLlmClient
+from .api import JsonLlmClient
