@@ -168,10 +168,19 @@ def _test_with_regex():
     print(result)
 
 
+def _test_standard():
+    llm = StandardLLM()
+    result = llm(
+        "Favourite colour:\n",
+    )
+    print(result)
+
+
 def main():
-    _test_with_json_schema()
-    _test_with_cfg()
-    _test_with_regex()
+    # _test_with_json_schema()
+    # _test_with_cfg()
+    # _test_with_regex()
+    _test_standard()
 
 
 if __name__ == "__main__":
