@@ -34,6 +34,10 @@ class JsonLlmClient(BaseModel):
             self.base_url + endpoint,
             json=request.dict(),
         )
+
+        # handle http errors
+        response.raise_for_status()
+
         # TODO(j.swannack): error handling
         return response_model.parse_obj(response.json())
 
