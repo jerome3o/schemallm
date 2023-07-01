@@ -132,6 +132,7 @@ class StandardLLM(BaseJsonLlmLLM):
 def main():
     from pydantic import BaseModel
 
+    # json schema
     class PersonalDetails(BaseModel):
         name: str
         location: str
@@ -140,6 +141,18 @@ def main():
     llm = JsonSchemaLLM(schema_restriction=parse_json_schema(PersonalDetails.schema()))
     result = llm(
         "Tell me about yourself, in JSON format!:\n",
+    )
+    print(result)
+
+    # cfg
+    cfg = """
+    start: value
+    value: "red" | "green" | "blue"
+    """
+
+    llm = CfgLLM(cfg=cfg)
+    result = llm(
+        "Favourite colour:\n",
     )
     print(result)
 
