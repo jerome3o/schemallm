@@ -11,9 +11,7 @@ from jsonllm.models.jsonschema import JsonSchema, parse_json_schema
 from jsonllm.client.http_api import JsonLlmClient, DEFAULT_BASE_URL
 
 
-class JsonSchemaLLM(LLM):
-    schema_restriction: JsonSchema
-
+class BaseJsonLlmLLM(LLM):
     base_url: str = DEFAULT_BASE_URL
     api_client: JsonLlmClient = None
 
@@ -21,9 +19,21 @@ class JsonSchemaLLM(LLM):
         super().__init__(*args, **kwargs)
         self.api_client = JsonLlmClient(base_url=self.base_url)
 
+
+class JsonSchemaLLM(BaseJsonLlmLLM):
+    schema_restriction: JsonSchema
+
     @property
     def _llm_type(self) -> str:
         return "jsonllm_json_schema"
+
+    @property
+    def _identifying_params(self) -> Mapping[str, Any]:
+        """Get the identifying parameters."""
+        return {
+            "schema_restriction": self.schema_restriction.dict(),
+            "base_url": self.base_url,
+        }
 
     def _call(
         self,
@@ -36,15 +46,35 @@ class JsonSchemaLLM(LLM):
             schema=self.schema_restriction.dict(),
             stop=stop,
         )
-        return json.dumps(result_obj.dict())
+        return json.dumps(result_obj.completion)
+
+
+class CfgLLM(BaseJsonLlmLLM):
+    cfg: str
+
+    @property
+    def _llm_type(self) -> str:
+        return "jsonllm_cfg"
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
         """Get the identifying parameters."""
         return {
-            "schema_restriction": self.schema_restriction.dict(),
+            "cfg": self.cfg,
             "base_url": self.base_url,
         }
+
+    def _call(
+        self,
+        prompt: str,
+        stop: Optional[List[str]] = None,
+        run_manager: Optional[CallbackManagerForLLMRun] = None,
+    ) -> str:
+        return self.api_client.completion_with_cfg(
+            prompt=prompt,
+            cfg=self.cfg,
+            stop=stop,
+        ).completion
 
 
 def main():
