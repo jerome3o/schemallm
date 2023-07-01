@@ -77,6 +77,34 @@ class CfgLLM(BaseJsonLlmLLM):
         ).completion
 
 
+class ReLLM(BaseJsonLlmLLM):
+    pattern: str
+
+    @property
+    def _llm_type(self) -> str:
+        return "jsonllm_re"
+
+    @property
+    def _identifying_params(self) -> Mapping[str, Any]:
+        """Get the identifying parameters."""
+        return {
+            "pattern": self.pattern,
+            "base_url": self.base_url,
+        }
+
+    def _call(
+        self,
+        prompt: str,
+        stop: Optional[List[str]] = None,
+        run_manager: Optional[CallbackManagerForLLMRun] = None,
+    ) -> str:
+        return self.api_client.completion_with_regex(
+            prompt=prompt,
+            pattern=self.pattern,
+            stop=stop,
+        ).completion
+
+
 def main():
     from pydantic import BaseModel
 
