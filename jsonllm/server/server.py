@@ -1,6 +1,7 @@
 import json
 import os
 
+import regex
 import torch
 from fastapi import FastAPI
 from lark import Lark
@@ -144,7 +145,7 @@ def complete_with_regex(
     return RegexCompletionResponse(
         completion=complete_re(
             prompt=completion_request.prompt,
-            pattern=completion_request.regex,
+            pattern=regex.compile(completion_request.regex),
             tokenizer=tokenizer,
             model=model,
             max_new_tokens=completion_request.max_tokens,

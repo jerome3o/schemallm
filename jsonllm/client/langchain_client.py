@@ -129,7 +129,7 @@ class StandardLLM(BaseJsonLlmLLM):
         ).completion
 
 
-def main():
+def _test_with_json_schema():
     from pydantic import BaseModel
 
     # json schema
@@ -144,6 +144,8 @@ def main():
     )
     print(result)
 
+
+def _test_with_cfg():
     # cfg
     cfg = """
     start: value
@@ -155,6 +157,21 @@ def main():
         "Favourite colour:\n",
     )
     print(result)
+
+
+def _test_with_regex():
+    # regex
+    llm = ReLLM(pattern=r"[a-zA-Z0-9]+@[a-zA-Z0-9-]+\.com")
+    result = llm(
+        "My name is leaf and I work at tree, what's a funny email address for me:\n",
+    )
+    print(result)
+
+
+def main():
+    _test_with_json_schema()
+    _test_with_cfg()
+    _test_with_regex()
 
 
 if __name__ == "__main__":
