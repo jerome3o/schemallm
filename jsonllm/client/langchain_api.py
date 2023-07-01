@@ -105,6 +105,30 @@ class ReLLM(BaseJsonLlmLLM):
         ).completion
 
 
+class StandardLLM(BaseJsonLlmLLM):
+    @property
+    def _llm_type(self) -> str:
+        return "jsonllm_standard"
+
+    @property
+    def _identifying_params(self) -> Mapping[str, Any]:
+        """Get the identifying parameters."""
+        return {
+            "base_url": self.base_url,
+        }
+
+    def _call(
+        self,
+        prompt: str,
+        stop: Optional[List[str]] = None,
+        run_manager: Optional[CallbackManagerForLLMRun] = None,
+    ) -> str:
+        return self.api_client.completion_standard(
+            prompt=prompt,
+            stop=stop,
+        ).completion
+
+
 def main():
     from pydantic import BaseModel
 
