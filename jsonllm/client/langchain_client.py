@@ -8,7 +8,7 @@ from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
 
 from jsonllm.models.jsonschema import JsonSchema, parse_json_schema
-from jsonllm.client.http_api import JsonLlmClient, DEFAULT_BASE_URL
+from jsonllm.client.http_api_client import JsonLlmClient, DEFAULT_BASE_URL
 
 
 class BaseJsonLlmLLM(LLM):
