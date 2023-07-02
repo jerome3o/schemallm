@@ -21,6 +21,7 @@ class BaseJsonLlmLLM(LLM):
 
 
 class JsonSchemaLLM(BaseJsonLlmLLM):
+    # TODO(j.swannack): could use a validator here to cast the dict to a JsonSchema
     schema_restriction: JsonSchema | dict
 
     def __init__(self, *args, **kwargs):
