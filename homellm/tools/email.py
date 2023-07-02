@@ -42,8 +42,8 @@ class SendEmailTool(BaseTool):
     llm: JsonSchemaLLM = None
 
     def __init__(self, *args, llm=None, **kwargs):
-        self.llm = llm or JsonSchemaLLM(schema_restriction=SendEmailParameters.schema())
-        super().__init__()
+        llm = llm or JsonSchemaLLM(schema_restriction=SendEmailParameters.schema())
+        super().__init__(*args, llm=llm, **kwargs)
 
     def _run(
         self,
