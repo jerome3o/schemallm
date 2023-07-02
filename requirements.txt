@@ -23,6 +23,7 @@ google-api-core==2.11.1
 google-api-python-client==2.91.0
 google-auth==2.21.0
 google-auth-httplib2==0.1.0
+google-auth-oauthlib==1.0.0
 googleapis-common-protos==1.59.1
 greenlet==2.0.2
 h11==0.14.0
@@ -56,6 +57,7 @@ nvidia-cusolver-cu11==11.4.0.1
 nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
+oauthlib==3.2.2
 openapi-schema-pydantic==1.2.4
 packaging==23.1
 -e git+ssh://git@github.com/jerome3o/parserllm.git@119c114738d46cb997ce5464a85cc9ee247965c6#egg=parserllm
@@ -73,6 +75,7 @@ PyYAML==6.0
 regex==2023.6.3
 -e git+ssh://git@github.com/jerome3o/rellm.git@ef950470c4d619561ddaef6d8bce842d6af42ed4#egg=rellm
 requests==2.31.0
+requests-oauthlib==1.3.1
 rsa==4.9
 safetensors==0.3.1
 scipy==1.10.1
