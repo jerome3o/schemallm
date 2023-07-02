@@ -1,4 +1,5 @@
 from typing import Optional
+import json
 
 from langchain.tools import BaseTool
 from langchain.llms.base import BaseLLM
@@ -9,6 +10,7 @@ from langchain.callbacks.manager import (
 from pydantic import BaseModel, EmailStr
 from googleapiclient.discovery import Resource
 
+from jsonllm.client.langchain_client import JsonSchemaLLM
 from homellm.google_services import send_email
 
 
@@ -18,20 +20,18 @@ class SendEmailParameters(BaseModel):
     recipient: EmailStr
 
 
-def get_email_parameters(input: str, llm: BaseLLM) -> SendEmailParameters:
-    # Get the subject
-    # Get the body
-    # Get the recipient
+_prompt = """\
+A description of an email:
+{{description}}
 
-    # Need to find a robust way of get these values from the llm, based on the input.
-    # We can hard code for now, but a more general solution would be to do some jsonschema
-    # validation
+The json object describing the email:
 
-    return SendEmailParameters(
-        subject="This is the subject of the email",
-        body="This is the body of the email",
-        recipient="",
-    )
+"""
+
+
+def get_email_parameters(input: str, llm: JsonSchemaLLM) -> SendEmailParameters:
+    prompt = _prompt.format(description=input)
+    return SendEmailParameters(json.loads(llm(prompt=prompt)))
 
 
 class SendEmailTool(BaseTool):
@@ -40,7 +40,11 @@ class SendEmailTool(BaseTool):
         "Useful for sending emails, a subject, body, and recipient are required."
     )
     gmail_service: Resource
-    llm: BaseLLM
+    llm: JsonSchemaLLM = None
+
+    def __init__(self, *args, llm=None, **kwargs):
+        self.llm = llm or JsonSchemaLLM(schema_restriction=SendEmailParameters.schema())
+        super().__init__()
 
     def _run(
         self,
