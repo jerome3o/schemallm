@@ -4,8 +4,8 @@ from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from jsonllm.client.langchain_client import StandardLLM
 
-_openai_api_base = os.environ["OPENAI_API_BASE"]
-_openai_api_key = os.environ["OPENAI_API_KEY"]
+_openai_api_base = os.environ.get("OPENAI_API_BASE", None)
+_openai_api_key = os.environ.get("OPENAI_API_KEY", None)
 _model = "vicuna-13b-v1.1-8bit"
 # TODO(j.swannack): Add os env var for jsonllm url
 
