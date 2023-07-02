@@ -7,7 +7,7 @@ import json
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
 
-from jsonllm.models.jsonschema import JsonSchema
+from jsonllm.models.jsonschema import JsonSchema, parse_json_schema
 from jsonllm.client.http_api_client import JsonLlmClient, DEFAULT_BASE_URL
 
 
@@ -21,7 +21,12 @@ class BaseJsonLlmLLM(LLM):
 
 
 class JsonSchemaLLM(BaseJsonLlmLLM):
-    schema_restriction: JsonSchema
+    schema_restriction: JsonSchema | dict
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if isinstance(self.schema_restriction, dict):
+            self.schema_restriction = parse_json_schema(self.schema_restriction)
 
     @property
     def _llm_type(self) -> str:
