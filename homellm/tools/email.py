@@ -2,7 +2,6 @@ from typing import Optional
 import json
 
 from langchain.tools import BaseTool
-from langchain.llms.base import BaseLLM
 from langchain.callbacks.manager import (
     CallbackManagerForToolRun,
     AsyncCallbackManagerForToolRun,
