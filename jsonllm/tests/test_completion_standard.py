@@ -4,6 +4,7 @@ from jsonllm.server.load_model import load_model
 
 
 def main():
+    # doesn't tigger the error, must be an async thing.
     model, tokenizer = load_model()
     complete_standard(
         model=model,
