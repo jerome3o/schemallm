@@ -85,9 +85,9 @@ def test_with_number():
 
 def main():
     # test_with_schema()
-    # test_standard_completion()
+    test_standard_completion()
     # test_with_cfg()
-    test_with_number()
+    # test_with_number()
 
 
 if __name__ == "__main__":

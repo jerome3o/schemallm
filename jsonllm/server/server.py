@@ -164,8 +164,6 @@ def complete_standard(
 ) -> CompletionResponse:
     # TODO(j.swannack): Add proper stop logic
     stop_token_list = [1, 2]
-
-    print(model)
     input_ids = tokenizer.encode(completion_request.prompt, return_tensors="pt").to(
         model.device
     )

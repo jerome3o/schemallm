@@ -55,3 +55,10 @@ def main():
     _test_with_cfg()
     _test_with_regex()
     _test_standard()
+
+
+if __name__ == "__main__":
+    import logging
+
+    logging.basicConfig(level=logging.INFO)
+    main()
