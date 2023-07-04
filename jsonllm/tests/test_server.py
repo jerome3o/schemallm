@@ -8,6 +8,8 @@ from jsonllm.models.api import (
     CfgCompletionRequest,
 )
 
+# TODO(j.swannack): Use `from fastapi.testclient import TestClient`
+# note it requires httpx
 
 class Details(BaseModel):
     season: str

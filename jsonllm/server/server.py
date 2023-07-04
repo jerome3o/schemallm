@@ -47,6 +47,8 @@ def get_tokenizer() -> AutoTokenizer:
     return load_tokenizer(_model)
 
 
+# TODO(j.swannack): Use Depends for the model and tokeniser
+
 class StopOnTokens(StoppingCriteria):
     def __init__(self, stop_ids: list):
         self.stop_ids = stop_ids
