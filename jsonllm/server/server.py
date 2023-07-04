@@ -14,7 +14,7 @@ from transformers import (
     StoppingCriteria,
 )
 
-from jsonllm.server.load_model import load_model
+from jsonllm.server.load_model import load_model, load_tokenizer
 from jsonllm.server.jsonschema2cfg import create_lark_cfg_for_schema
 from jsonllm.models.api import (
     CompletionRequest,
@@ -39,6 +39,12 @@ app = FastAPI(
 # conforming to the schema
 
 _model = os.environ["MODEL_PATH"]
+
+def get_model() -> AutoModelForCausalLM:
+    return load_model(_model)
+
+def get_tokenizer() -> AutoTokenizer:
+    return load_tokenizer(_model)
 
 
 class StopOnTokens(StoppingCriteria):
@@ -202,6 +208,7 @@ if __name__ == "__main__":
 
     # # TODO(j.swannack): Figure out how to load the model and tokenizer outside of the module scope, but
     # # still have it be available when running with uvicorn.
-    model, tokenizer = load_model()
+    model = load_model()
+    tokenizer = load_tokenizer()
 
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,11 +1,12 @@
 from jsonllm.models.api import CompletionRequest
 from jsonllm.server.server import complete_standard
-from jsonllm.server.load_model import load_model
+from jsonllm.server.load_model import load_model, load_tokenizer
 
 
 def main():
     # doesn't tigger the error, must be an async thing.
-    model, tokenizer = load_model()
+    model = load_model()
+    tokenizer = load_tokenizer()
     complete_standard(
         model=model,
         tokenizer=tokenizer,
