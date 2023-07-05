@@ -1,4 +1,5 @@
 import requests
+import pytest
 from pydantic import BaseModel
 
 
@@ -8,8 +9,18 @@ from jsonllm.models.api import (
     CfgCompletionRequest,
 )
 
-# TODO(j.swannack): Use `from fastapi.testclient import TestClient`
-# note it requires httpx
+from fastapi.testclient import TestClient
+from jsonllm.server.load_model import load_model, load_tokenizer
+
+
+@pytest.fixture
+def model():
+    return load_model("gpt2")
+
+
+@pytest.fixture
+def tokenizer():
+    return load_tokenizer("gpt2")
 
 class Details(BaseModel):
     season: str
