@@ -29,8 +29,10 @@ google-auth-oauthlib==1.0.0
 googleapis-common-protos==1.59.1
 greenlet==2.0.2
 h11==0.14.0
+httpcore==0.17.2
 httplib2==0.22.0
 httptools==0.5.0
+httpx==0.24.1
 huggingface-hub==0.15.1
 idna==3.4
 iniconfig==2.0.0
