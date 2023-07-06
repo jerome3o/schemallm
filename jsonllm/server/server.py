@@ -222,9 +222,4 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
 
-    # # TODO(j.swannack): Figure out how to load the model and tokenizer outside of the module scope, but
-    # # still have it be available when running with uvicorn.
-    model = load_model()
-    tokenizer = load_tokenizer()
-
     uvicorn.run(app, host="0.0.0.0", port=8000)

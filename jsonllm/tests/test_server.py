@@ -21,16 +21,16 @@ def model():
     return load_model("gpt2")
 
 
-@pytest.fixture
-def tokenizer(scope="module"):
+@pytest.fixture(scope="module")
+def tokenizer():
     return load_tokenizer("gpt2")
 
 
 @pytest.fixture(scope="module")
 def test_app(model, tokenizer):
+    _app.dependency_overrides[load_model] = lambda: model
+    _app.dependency_overrides[load_tokenizer] = lambda: tokenizer
     app = TestClient(_app)
-    app.dependency_overrides[load_model] = lambda: model
-    app.dependency_overrides[load_tokenizer] = lambda: tokenizer
     return app
 
 
