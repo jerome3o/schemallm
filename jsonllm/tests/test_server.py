@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 import json
 
 
-from jsonllm.server.server import app as _app
+from jsonllm.server.server import app as _app, get_model, get_tokenizer
 from jsonllm.models.api import (
     SchemaCompletionRequest,
     CompletionRequest,
@@ -28,8 +28,8 @@ def tokenizer():
 
 @pytest.fixture(scope="module")
 def test_app(model, tokenizer):
-    _app.dependency_overrides[load_model] = lambda: model
-    _app.dependency_overrides[load_tokenizer] = lambda: tokenizer
+    _app.dependency_overrides[get_model] = lambda: model
+    _app.dependency_overrides[get_tokenizer] = lambda: tokenizer
     app = TestClient(_app)
     return app
 
