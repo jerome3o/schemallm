@@ -40,14 +40,17 @@ app = FastAPI(
 
 _model = os.environ["MODEL_PATH"]
 
+
 def get_model() -> AutoModelForCausalLM:
     return load_model(_model)
+
 
 def get_tokenizer() -> AutoTokenizer:
     return load_tokenizer(_model)
 
 
 # TODO(j.swannack): Use Depends for the model and tokeniser
+
 
 class StopOnTokens(StoppingCriteria):
     def __init__(self, stop_ids: list):
@@ -68,22 +71,38 @@ class StopOnTokens(StoppingCriteria):
 
 
 @app.post("/v1/completion/with-cfg", response_model=CfgCompletionResponse)
-def cfg_endpoint(r: CfgCompletionRequest):
+def cfg_endpoint(
+    r: CfgCompletionRequest,
+    model: Annotated[AutoModelForCausalLM, Depends(get_model)],
+    tokenizer: Annotated[AutoTokenizer, Depends(get_tokenizer)],
+):
     return complete_with_cfg(model, tokenizer, r)
 
 
 @app.post("/v1/completion/with-schema", response_model=SchemaCompletionResponse)
-def schema_endpoint(r: SchemaCompletionRequest):
+def schema_endpoint(
+    r: SchemaCompletionRequest,
+    model: Annotated[AutoModelForCausalLM, Depends(get_model)],
+    tokenizer: Annotated[AutoTokenizer, Depends(get_tokenizer)],
+):
     return complete_with_schema(model, tokenizer, r)
 
 
 @app.post("/v1/completion/with-regex", response_model=RegexCompletionResponse)
-def regex_endpoint(r: RegexCompletionRequest):
+def regex_endpoint(
+    r: RegexCompletionRequest,
+    model: Annotated[AutoModelForCausalLM, Depends(get_model)],
+    tokenizer: Annotated[AutoTokenizer, Depends(get_tokenizer)],
+):
     return complete_with_regex(model, tokenizer, r)
 
 
 @app.post("/v1/completion/standard", response_model=CompletionResponse)
-def standard_endpoint(r: CompletionRequest):
+def standard_endpoint(
+    r: CompletionRequest,
+    model: Annotated[AutoModelForCausalLM, Depends(get_model)],
+    tokenizer: Annotated[AutoTokenizer, Depends(get_tokenizer)],
+):
     return complete_standard(model, tokenizer, r)
 
 
@@ -172,9 +191,7 @@ def complete_standard(
 ) -> CompletionResponse:
     # TODO(j.swannack): Add proper stop logic
     stop_token_list = [1, 2]
-    input_ids = tokenizer.encode(completion_request.prompt, return_tensors="pt").to(
-        model.device
-    )
+    input_ids = tokenizer.encode(completion_request.prompt, return_tensors="pt").to(model.device)
     all_tokens = model.generate(
         input_ids,
         # TODO(j.swannack): move validation to pydantic model
@@ -182,9 +199,7 @@ def complete_standard(
         max_new_tokens=completion_request.max_tokens,
         pad_token_id=tokenizer.eos_token_id,
         do_sample=True,
-        stopping_criteria=StoppingCriteriaList(
-            [StopOnTokens(stop_ids=stop_token_list)]
-        ),
+        stopping_criteria=StoppingCriteriaList([StopOnTokens(stop_ids=stop_token_list)]),
     )
 
     tokens = all_tokens[0].tolist()
@@ -197,9 +212,7 @@ def complete_standard(
         tokens = tokens[:-1]
 
     # add more outputs if needed
-    return CompletionResponse(
-        completion=tokenizer.decode(tokens, skip_special_tokens=True)
-    )
+    return CompletionResponse(completion=tokenizer.decode(tokens, skip_special_tokens=True))
 
 
 if __name__ == "__main__":
