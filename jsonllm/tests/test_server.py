@@ -2,6 +2,7 @@ import requests
 import pytest
 from pydantic import BaseModel
 from fastapi.testclient import TestClient
+import json
 
 
 from jsonllm.server.server import app
@@ -40,11 +41,13 @@ def test_with_schema(test_app, model: model, tokenizer: tokenizer):
     request = SchemaCompletionRequest(
         prompt=prompt,
         max_tokens=2000,
-        schema_restriction=Details.schema(),
+        schema_restriction=json.loads(Details.schema_json()),
     )
-    result = app.schema_endpoint(request)
+    result = test_app.post(
+        "/v1/completion/with-schema", 
+        json=request.dict(),
+    )
     print(result)
-    
 
 def test_standard_completion():
     prompt = "Favourite colour:\n"
