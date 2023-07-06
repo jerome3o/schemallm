@@ -1,9 +1,10 @@
 import json
 import os
+from typing import Annotated
 
 import regex
 import torch
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from lark import Lark
 from parserllm import complete_cf
 from rellm import complete_re
