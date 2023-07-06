@@ -1,8 +1,10 @@
 import requests
 import pytest
 from pydantic import BaseModel
+from fastapi.testclient import TestClient
 
 
+from jsonllm.server.server import app
 from jsonllm.models.api import (
     SchemaCompletionRequest,
     CompletionRequest,
@@ -13,34 +15,36 @@ from fastapi.testclient import TestClient
 from jsonllm.server.load_model import load_model, load_tokenizer
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def model():
     return load_model("gpt2")
 
 
 @pytest.fixture
-def tokenizer():
+def tokenizer(scope="module"):
     return load_tokenizer("gpt2")
+
+
+@pytest.fixture(scope="module")
+def test_app():
+    return TestClient(app)
+
 
 class Details(BaseModel):
     season: str
     temperature_celsius: float
 
 
-def test_with_schema():
+def test_with_schema(test_app, model: model, tokenizer: tokenizer):
     prompt = "Oh boy, it's cold outside! it must be winter and about 13.51 degrees celsius.\nJSON Object describing environment:\n"
     request = SchemaCompletionRequest(
         prompt=prompt,
         max_tokens=2000,
         schema_restriction=Details.schema(),
     )
-
-    resp = requests.post(
-        "http://localhost:8000/v1/completion/with-schema",
-        json=request.dict(),
-    )
-    print(resp.json())
-
+    result = app.schema_endpoint(request)
+    print(result)
+    
 
 def test_standard_completion():
     prompt = "Favourite colour:\n"
