@@ -39,7 +39,7 @@ class Details(BaseModel):
     temperature_celsius: float
 
 
-def test_with_schema(test_app, model: model, tokenizer: tokenizer):
+def test_with_schema(test_app):
     prompt = "Oh boy, it's cold outside! it must be winter and about 13.51 degrees celsius.\nJSON Object describing environment:\n"
     request = SchemaCompletionRequest(
         prompt=prompt,
@@ -47,25 +47,26 @@ def test_with_schema(test_app, model: model, tokenizer: tokenizer):
         schema_restriction=json.loads(Details.schema_json()),
     )
     result = test_app.post(
-        "/v1/completion/with-schema", 
+        "/v1/completion/with-schema",
         json=request.dict(),
     )
     print(result)
 
-def test_standard_completion():
+
+def test_standard_completion(test_app):
     prompt = "Favourite colour:\n"
     request = CompletionRequest(
         prompt=prompt,
         max_tokens=10,
     )
-    resp = requests.post(
-        "http://localhost:8000/v1/completion/standard",
+    resp = test_app.post(
+        "/v1/completion/standard",
         json=request.dict(),
     )
     print(resp.json())
 
 
-def test_with_cfg():
+def test_with_cfg(test_app):
     prompt = "Favourite colour:\n"
 
     cfg = """
@@ -78,14 +79,14 @@ def test_with_cfg():
         cfg=cfg,
         max_tokens=10,
     )
-    resp = requests.post(
+    resp = test_app.post(
         "http://localhost:8000/v1/completion/with-cfg",
         json=request.dict(),
     )
     print(resp.json())
 
 
-def test_with_number():
+def test_with_number(test_app):
     prompt = "Repeat after me: 13.512\nReponse: "
 
     cfg = """
@@ -99,22 +100,8 @@ def test_with_number():
         cfg=cfg,
         max_tokens=10,
     )
-    resp = requests.post(
+    resp = test_app.post(
         "http://localhost:8000/v1/completion/with-cfg",
         json=request.dict(),
     )
     print(resp.json())
-
-
-def main():
-    # test_with_schema()
-    test_standard_completion()
-    # test_with_cfg()
-    # test_with_number()
-
-
-if __name__ == "__main__":
-    import logging
-
-    logging.basicConfig(level=logging.INFO)
-    main()
