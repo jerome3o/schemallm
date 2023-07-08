@@ -1,5 +1,8 @@
 import json
 import os
+import signal
+import sys
+from types import FrameType
 from typing import Annotated
 
 import regex
@@ -73,6 +76,14 @@ def startup_event():
         app.dependency_overrides[get_tokenizer]()
     else:
         get_tokenizer()
+
+    default_sigint_handler = signal.getsignal(signal.SIGINT)
+
+    def terminate_now(signum: int, frame: FrameType = None):
+        default_sigint_handler(signum, frame)
+        sys.exit()
+
+    signal.signal(signal.SIGINT, terminate_now)
 
 
 @app.post("/v1/completion/with-cfg", response_model=CfgCompletionResponse)
