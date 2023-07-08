@@ -1,4 +1,3 @@
-import requests
 import pytest
 from pydantic import BaseModel
 from fastapi.testclient import TestClient
