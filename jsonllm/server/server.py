@@ -11,12 +11,11 @@ from rellm import complete_re
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
-    StoppingCriteriaList,
-    StoppingCriteria,
 )
 
 from jsonllm.server.load_model import load_model, load_tokenizer
 from jsonllm.server.jsonschema2cfg import create_lark_cfg_for_schema
+from jsonllm.server.standard_completion import complete_standard
 from jsonllm.models.api import (
     CompletionRequest,
     CompletionResponse,
@@ -51,24 +50,6 @@ def get_tokenizer() -> AutoTokenizer:
 
 
 # TODO(j.swannack): Use Depends for the model and tokeniser
-
-
-class StopOnTokens(StoppingCriteria):
-    def __init__(self, stop_ids: list):
-        self.stop_ids = stop_ids
-        super().__init__()
-
-    def __call__(
-        self,
-        input_ids: torch.LongTensor,
-        scores: torch.FloatTensor,
-        **kwargs,
-    ) -> bool:
-        stop_ids = self.stop_ids
-        for stop_id in stop_ids:
-            if input_ids[0][-1] == stop_id:
-                return True
-        return False
 
 
 @app.post("/v1/completion/with-cfg", response_model=CfgCompletionResponse)
@@ -181,39 +162,6 @@ def complete_with_regex(
             debug=True,
         )
     )
-
-
-# TODO(j.swannack): move inference code to a separate module
-@torch.inference_mode()
-def complete_standard(
-    model: AutoModelForCausalLM,
-    tokenizer: AutoTokenizer,
-    completion_request: CompletionRequest,
-) -> CompletionResponse:
-    # TODO(j.swannack): Add proper stop logic
-    stop_token_list = [1, 2]
-    input_ids = tokenizer.encode(completion_request.prompt, return_tensors="pt").to(model.device)
-    all_tokens = model.generate(
-        input_ids,
-        # TODO(j.swannack): move validation to pydantic model
-        temperature=max(min(completion_request.temperature, 1.0), 0.0),
-        max_new_tokens=completion_request.max_tokens,
-        pad_token_id=tokenizer.eos_token_id,
-        do_sample=True,
-        stopping_criteria=StoppingCriteriaList([StopOnTokens(stop_ids=stop_token_list)]),
-    )
-
-    tokens = all_tokens[0].tolist()
-
-    # remove input tokens
-    tokens = tokens[len(input_ids[0]) :]
-
-    # remove end tokens
-    if tokens[-1] in stop_token_list:
-        tokens = tokens[:-1]
-
-    # add more outputs if needed
-    return CompletionResponse(completion=tokenizer.decode(tokens, skip_special_tokens=True))
 
 
 if __name__ == "__main__":
