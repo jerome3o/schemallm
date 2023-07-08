@@ -38,18 +38,41 @@ app = FastAPI(
 # This is a nice to have, but would be really cool to see the completion as it's being generated
 # conforming to the schema
 
-_model = os.environ["MODEL_PATH"]
+_model_path = os.environ["MODEL_PATH"]
+
+_model = None
+_tokenizer = None
 
 
 def get_model() -> AutoModelForCausalLM:
-    return load_model(_model)
+    global _model
+
+    if _model is None:
+        _model = load_model(_model_path)
+
+    return _model
 
 
 def get_tokenizer() -> AutoTokenizer:
-    return load_tokenizer(_model)
+    global _tokenizer
+
+    if _tokenizer is None:
+        _tokenizer = load_tokenizer(_model_path)
+
+    return _tokenizer
 
 
-# TODO(j.swannack): Use Depends for the model and tokeniser
+@app.on_event("startup")
+def startup_event():
+    if get_model in app.dependency_overrides:
+        app.dependency_overrides[get_model]()
+    else:
+        get_model()
+
+    if get_tokenizer in app.dependency_overrides:
+        app.dependency_overrides[get_tokenizer]()
+    else:
+        get_tokenizer()
 
 
 @app.post("/v1/completion/with-cfg", response_model=CfgCompletionResponse)
