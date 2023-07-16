@@ -12,6 +12,7 @@ from langchain.agents import (
 )
 from langchain.prompts import StringPromptTemplate
 from langchain.schema import AgentAction, AgentFinish
+from jsonllm.client.langchain_client import CfgLLM
 
 # following
 # https://python.langchain.com/en/latest/modules/agents/agents/custom_llm_agent.html
@@ -37,6 +38,30 @@ Begin!
 
 Question: {input}
 {agent_scratchpad}"""
+
+
+def get_response_cfg(tools: List[BaseTool]):
+    tool_spec = " | ".join([f'"{tool.name}"' for tool in tools])
+
+    response_cfg = """
+    start: (thought_action | final_thought_answer)
+
+    ?thought_action: THOUGHT ":" TEXT NL ACTION ":" TEXT NL
+    ?final_thought_answer: THOUGHT ":" TEXT NL FINALANSWER ":" TEXT NL
+
+    TEXT: /.+/
+    TOOL: ({tool_spec})
+    NL: /\n|(\r\n)?/
+
+    !THOUGHT: "Thought"
+    !ACTION: "Action"
+    !FINALANSWER: "Final Answer"
+
+    %x WHITESPACE
+
+    %import common.WORD
+
+    """
 
 
 # Set up a prompt template
@@ -88,8 +113,11 @@ class CustomOutputParser(AgentOutputParser):
         )
 
 
-def get_agent(llm: BaseLLM, tools: List[Tool]) -> AgentExecutor:
+def get_agent(tools: List[Tool], llm: CfgLLM = None) -> AgentExecutor:
     # LLM chain consisting of the LLM and a prompt
+
+    if llm is None:
+        llm = CfgLLM(cfg=get_response_cfg(tools))
 
     output_parser = CustomOutputParser()
     prompt = CustomPromptTemplate(
@@ -116,27 +144,3 @@ def get_agent(llm: BaseLLM, tools: List[Tool]) -> AgentExecutor:
         verbose=True,
     )
     return agent_executor
-
-
-def main():
-    from homellm.llm import get_llm_chat
-
-    print(template)
-
-    llm = get_llm_chat()
-    reverse_tool = Tool(
-        name="Reverse",
-        description="Reverses a string.",
-        func=lambda s: s[::-1],
-    )
-    tools = [reverse_tool]
-
-    agent = get_agent(llm=llm, tools=tools)
-    agent.run("Reverse the string 'hey'")
-
-
-if __name__ == "__main__":
-    import logging
-
-    logging.basicConfig(level=logging.INFO)
-    main()

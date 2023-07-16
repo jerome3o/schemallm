@@ -10,12 +10,11 @@ _RECIPIENT = os.environ["RECIPIENT_EMAIL"]
 
 
 def main():
-    llm = get_llm()
     _, gmail_service = initialize_services()
     send_email_tool = SendEmailTool(
         gmail_service=gmail_service,
     )
-    agent = get_agent(llm=llm, tools=[send_email_tool])
+    agent = get_agent(tools=[send_email_tool])
     agent.run(f"Send an email to {_RECIPIENT} about frogs.")
 
 
