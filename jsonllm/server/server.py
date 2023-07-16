@@ -2,8 +2,10 @@ import json
 import os
 import signal
 import sys
+from functools import wraps
 from types import FrameType
 from typing import Annotated
+import logging
 
 import regex
 import torch
@@ -29,6 +31,8 @@ from jsonllm.models.api import (
     RegexCompletionRequest,
     RegexCompletionResponse,
 )
+
+_logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="JsonLLM",
@@ -65,6 +69,33 @@ def get_tokenizer() -> AutoTokenizer:
     return _tokenizer
 
 
+def log_inputs_outputs(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        # get all inputs that are inherit from CompletionRequest
+        all_inputs = args + tuple(kwargs.values())
+        inputs = [arg for arg in all_inputs if isinstance(arg, CompletionRequest)]
+
+        if inputs:
+            # log inputs
+            for input in inputs:
+                _logger.info(f"Inputs: \n{input.json(indent=2)}")
+        else:
+            _logger.info(f"Inputs: \n{all_inputs}")
+
+        result = f(*args, **kwargs)
+
+        # log outputs
+        if isinstance(result, CompletionResponse):
+            _logger.info(f"Outputs: \n{result.json(indent=2)}")
+        else:
+            _logger.info(f"Outputs: \n{result}")
+
+        return result
+
+    return wrapper
+
+
 @app.on_event("startup")
 def startup_event():
     if get_model in app.dependency_overrides:
@@ -87,6 +118,7 @@ def startup_event():
 
 
 @app.post("/v1/completion/with-cfg", response_model=CfgCompletionResponse)
+@log_inputs_outputs
 def cfg_endpoint(
     r: CfgCompletionRequest,
     model: Annotated[AutoModelForCausalLM, Depends(get_model)],
@@ -96,6 +128,7 @@ def cfg_endpoint(
 
 
 @app.post("/v1/completion/with-schema", response_model=SchemaCompletionResponse)
+@log_inputs_outputs
 def schema_endpoint(
     r: SchemaCompletionRequest,
     model: Annotated[AutoModelForCausalLM, Depends(get_model)],
@@ -105,6 +138,7 @@ def schema_endpoint(
 
 
 @app.post("/v1/completion/with-regex", response_model=RegexCompletionResponse)
+@log_inputs_outputs
 def regex_endpoint(
     r: RegexCompletionRequest,
     model: Annotated[AutoModelForCausalLM, Depends(get_model)],
@@ -114,6 +148,7 @@ def regex_endpoint(
 
 
 @app.post("/v1/completion/standard", response_model=CompletionResponse)
+@log_inputs_outputs
 def standard_endpoint(
     r: CompletionRequest,
     model: Annotated[AutoModelForCausalLM, Depends(get_model)],
