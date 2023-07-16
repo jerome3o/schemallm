@@ -42,9 +42,14 @@ def initialize_services(
 
     # If there are no valid credentials available, run the OAuth2 flow.
     if not creds or not creds.valid:
+        auth_failed = False
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
+            try:
+                creds.refresh(Request())
+            except Exception:
+                auth_failed = True
+
+        if auth_failed:
             try:
                 flow = InstalledAppFlow.from_client_secrets_file(
                     credentials_file, scopes
