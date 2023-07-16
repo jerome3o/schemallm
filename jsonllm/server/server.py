@@ -80,6 +80,8 @@ def log_inputs_outputs(f):
             # log inputs
             for input in inputs:
                 _logger.info(f"Inputs: \n{input.json(indent=2)}")
+                if prompt := input.dict().get("prompt"):
+                    _logger.info(f"Prompt --- \n{prompt}\nPrompt end ---")
         else:
             _logger.info(f"Inputs: \n{all_inputs}")
 
@@ -88,6 +90,10 @@ def log_inputs_outputs(f):
         # log outputs
         if isinstance(result, CompletionResponse):
             _logger.info(f"Outputs: \n{result.json(indent=2)}")
+            if completion := result.dict().get("completion"):
+                if isinstance(completion, dict):
+                    completion = json.dumps(completion, indent=2)
+                _logger.info(f"Completion --- \n{completion}\nCompletion end ---")
         else:
             _logger.info(f"Outputs: \n{result}")
 
