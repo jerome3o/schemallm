@@ -82,6 +82,8 @@ def log_inputs_outputs(f):
                 _logger.info(f"Inputs: \n{input.json(indent=2)}")
                 if prompt := input.dict().get("prompt"):
                     _logger.info(f"Prompt --- \n{prompt}\nPrompt end ---")
+                if cfg := input.dict().get("cfg"):
+                    _logger.info(f"CFG --- \n{cfg}\nCFG end ---")
         else:
             _logger.info(f"Inputs: \n{all_inputs}")
 
