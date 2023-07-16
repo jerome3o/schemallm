@@ -1,7 +1,6 @@
 import re
 from typing import List, Union
 
-from langchain.llms.base import BaseLLM
 from langchain.tools import BaseTool
 from langchain import LLMChain
 from langchain.agents import (
@@ -43,24 +42,19 @@ Question: {input}
 def get_response_cfg(tools: List[BaseTool]):
     tool_spec = " | ".join([f'"{tool.name}"' for tool in tools])
 
-    response_cfg = """
+    return f"""
     start: (thought_action | final_thought_answer)
 
-    ?thought_action: THOUGHT ":" TEXT NL ACTION ":" TEXT NL
-    ?final_thought_answer: THOUGHT ":" TEXT NL FINALANSWER ":" TEXT NL
+    ?thought_action: THOUGHT ": " TEXT NL ACTION ": " TEXT NL
+    ?final_thought_answer: THOUGHT ": " TEXT NL FINALANSWER ": " TEXT NL
 
-    TEXT: /.+/
-    TOOL: ({tool_spec})
-    NL: /\n|(\r\n)?/
+    TEXT: /[^:\\r\\n]+/
+    TOOL: {tool_spec}
+    NL: /\\n/
 
-    !THOUGHT: "Thought"
-    !ACTION: "Action"
-    !FINALANSWER: "Final Answer"
-
-    %x WHITESPACE
-
-    %import common.WORD
-
+    THOUGHT: "Thought"
+    ACTION: "Action"
+    FINALANSWER: "Final Answer"
     """
 
 
