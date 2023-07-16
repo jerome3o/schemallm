@@ -30,7 +30,7 @@ The json object describing the email:
 
 def get_email_parameters(input: str, llm: JsonSchemaLLM) -> SendEmailParameters:
     prompt = _prompt.format(description=input)
-    return SendEmailParameters(json.loads(llm(prompt=prompt)))
+    return SendEmailParameters(**json.loads(llm(prompt=prompt)))
 
 
 class SendEmailTool(BaseTool):
