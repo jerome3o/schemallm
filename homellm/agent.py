@@ -48,7 +48,7 @@ def get_response_cfg(tools: List[BaseTool]):
     ?thought_action: THOUGHT ": " TEXT NL ACTION ": " TEXT NL
     ?final_thought_answer: THOUGHT ": " TEXT NL FINALANSWER ": " TEXT NL
 
-    TEXT: /[^:\\r\\n]+/
+    TEXT: /[^:\\r\\n\\u200b]+/
     TOOL: {tool_spec}
     NL: /\\n/
 
