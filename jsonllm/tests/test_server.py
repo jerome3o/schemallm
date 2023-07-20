@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from fastapi.testclient import TestClient
 import json
 
-
+from jsonllm.tests.fixtures import model, tokenizer
 from jsonllm.server.server import app as _app, get_model, get_tokenizer
 from jsonllm.models.api import (
     SchemaCompletionRequest,
@@ -13,16 +13,6 @@ from jsonllm.models.api import (
 
 from fastapi.testclient import TestClient
 from jsonllm.server.load_model import load_model, load_tokenizer
-
-
-@pytest.fixture(scope="module")
-def model():
-    return load_model("gpt2")
-
-
-@pytest.fixture(scope="module")
-def tokenizer():
-    return load_tokenizer("gpt2")
 
 
 @pytest.fixture(scope="module")
