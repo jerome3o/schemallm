@@ -40,6 +40,9 @@ def complete_re(
 
         allowed_token_ids = token_filter.filter_tokens(partial_completion, pattern)
         if not allowed_token_ids:
+            if any([p.match(partial_completion) for p in pattern]):
+                return partial_completion
+
             raise ValueError(
                 f"No tokens allowed for completion with pattern {pattern} and partial "
                 f"completion {partial_completion}"
