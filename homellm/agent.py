@@ -42,7 +42,7 @@ Question: {input}
 def get_response_cfg(tools: List[BaseTool]):
     tool_spec = " | ".join([f'"{tool.name}"' for tool in tools])
 
-    return """
+    return r"""
     start: (thought_action | final_thought_answer)
 
     ?thought_action: THOUGHT ": " TEXT NL ACTION ": " TEXT NL
