@@ -1,6 +1,8 @@
+Taken from [here](https://github.com/r2d4/parserllm). I have copied it here for now as I was making significant changes.
+
 # parserLLM
 
-Use a context-free grammar and a parser generator to determine valid next tokens for an LLM generation. 
+Use a context-free grammar and a parser generator to determine valid next tokens for an LLM generation.
 
 Extending [ReLLM](https://github.com/r2d4/rellm) to handle context-free grammars in addition to regular expressions.
 
@@ -10,7 +12,7 @@ Extending [ReLLM](https://github.com/r2d4/rellm) to handle context-free grammars
 pip install parserllm
 ```
 
-See [examples/example.py](examples/example.py) for an example of how to use this library. 
+See [examples/example.py](examples/example.py) for an example of how to use this library.
 
 Run it with `python examples/example.py`.
 

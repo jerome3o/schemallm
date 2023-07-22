@@ -1,3 +1,6 @@
+Taken from [here](https://github.com/r2d4/rellm). I have copied it here for now as I was making significant changes.
+
+
 # ReLLM
 Regular Expressions for Language Model Completions.
 
@@ -28,8 +31,8 @@ tokenizer = AutoTokenizer.from_pretrained("gpt2")
 
 prompt = "ReLLM, the best way to get structured data out of LLMs, is an acronym for "
 pattern = regex.compile(r'Re[a-z]+ L[a-z]+ L[a-z]+ M[a-z]+')
-output = complete_re(tokenizer=tokenizer, 
-                     model=model, 
+output = complete_re(tokenizer=tokenizer,
+                     model=model,
                      prompt=prompt,
                      pattern=pattern,
                      do_sample=True,
@@ -109,7 +112,7 @@ Z-R
 
 #
 
-**Prompt**: I can eat 
+**Prompt**: I can eat
 
 **Pattern**: [0-9]{1,10} [a-z]* of [a-z]*
 
