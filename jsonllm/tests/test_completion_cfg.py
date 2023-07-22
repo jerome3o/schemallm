@@ -29,7 +29,7 @@ Question: Send an email to jeromeswannack@gmail.com about frogs.
 
 """
 
-    cfg = """
+    cfg = r"""
     start: (thought_action | final_thought_answer)
 
     ?thought_action: THOUGHT ": " TEXT NL ACTION ": " TEXT NL

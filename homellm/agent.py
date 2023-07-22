@@ -42,20 +42,22 @@ Question: {input}
 def get_response_cfg(tools: List[BaseTool]):
     tool_spec = " | ".join([f'"{tool.name}"' for tool in tools])
 
-    return f"""
+    return """
     start: (thought_action | final_thought_answer)
 
     ?thought_action: THOUGHT ": " TEXT NL ACTION ": " TEXT NL
     ?final_thought_answer: THOUGHT ": " TEXT NL FINALANSWER ": " TEXT NL
 
-    TEXT: /[^:\\r\\n\\u200b]+/
+    TEXT: /[^:\r\n\u200b]+/
     TOOL: {tool_spec}
-    NL: /\\n/
+    NL: /\n/
 
     THOUGHT: "Thought"
     ACTION: "Action"
     FINALANSWER: "Final Answer"
-    """
+    """.format(
+        tool_spec=tool_spec
+    )
 
 
 # Set up a prompt template
