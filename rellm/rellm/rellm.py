@@ -95,6 +95,9 @@ def is_constant_regex(pattern: str) -> bool:
     for char in ESCAPED_CHARS:
         pattern = pattern.replace("\\" + char, "")
 
+    # not sure what escaping the space characters does
+    pattern = pattern.replace("\\ ", " ")
+
     for char in ESCAPED_CHARS:
         if char in pattern:
             return False
