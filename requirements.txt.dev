@@ -73,6 +73,8 @@ nvidia-nvtx-cu11==11.7.91
 oauthlib==3.2.2
 openapi-schema-pydantic==1.2.4
 packaging==23.1
+# Editable install with no version control (parserllm==0.0.1)
+-e ./parserllm
 parso==0.8.3
 pathspec==0.11.1
 pexpect==4.8.0
@@ -94,6 +96,8 @@ pytest==7.4.0
 python-dotenv==1.0.0
 PyYAML==6.0
 regex==2023.6.3
+# Editable install with no version control (rellm==0.0.5)
+-e ./rellm
 requests==2.31.0
 requests-oauthlib==1.3.1
 rsa==4.9
