@@ -5,6 +5,7 @@ from transformers import PreTrainedModel, PreTrainedTokenizer
 
 from rellm.logits_mask import LogitsMask
 from rellm.re_token_filter import ReTokenFilter
+from rellm.logit_tracker import LogitTracker, EndCondition
 
 ESCAPED_CHARS = r"\.*+?{}()[]|^$"
 
@@ -17,6 +18,7 @@ def complete_re(
     max_new_tokens: int = 3,
     stop_after_match: bool = True,
     debug: bool = False,
+    tracker: LogitTracker = None,
     **model_kwargs,
 ):
     """
@@ -32,6 +34,7 @@ def complete_re(
     partial_completion = ""
     prompt_plus_completion = prompt + partial_completion
 
+    # TODO(j.swannack): Allow this to be injected.
     token_filter = ReTokenFilter(tokenizer)
 
     while gen_tokens < max_new_tokens:
@@ -47,7 +50,7 @@ def complete_re(
                 f"No tokens allowed for completion with pattern {pattern} and partial "
                 f"completion {partial_completion}"
             )
-        custom_mask_processor = LogitsMask(allowed_token_ids)
+        custom_mask_processor = LogitsMask(allowed_token_ids, tracker=tracker)
 
         output_ids = model.generate(
             prompt_token_ids.to(model.device),
@@ -64,16 +67,32 @@ def complete_re(
         if debug:
             print("step={} completion={}".format(gen_tokens, partial_completion))
 
+        if tracker:
+            tracker.result_tokens.append(output_text)
+
+        # TODO(j.swannack): refactor
         if stop_after_match:
             for p in pattern:
                 m = p.match(partial_completion)
                 if m:
                     if m.start() == 0 and m.end() < (len(partial_completion) - 5):
+                        if tracker:
+                            tracker.end_condition = EndCondition.TOKEN_LOOKAHEAD
+                            tracker.result = m[0]
+
                         return m[0]
                     if previous_partial_completion == partial_completion:
+                        if tracker:
+                            tracker.end_condition = EndCondition.REPEAT
+                            tracker.result = m[0]
+
                         return m[0]
 
         gen_tokens += 1
+
+    if tracker:
+        tracker.end_condition = EndCondition.MAX_TOKENS
+        tracker.result = partial_completion
 
     return partial_completion
 
