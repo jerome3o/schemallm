@@ -1,7 +1,10 @@
 import regex
 from lark import UnexpectedInput, Lark
-from rellm import complete_re
 from transformers import PreTrainedModel, PreTrainedTokenizer
+
+from rellm import complete_re
+from rellm.logit_tracker import LogitTracker
+from parserllm.logit_tracker import LogitTrackerParserLLM
 
 
 def extract_terminal_regex(parser, stop_token):
@@ -39,6 +42,8 @@ def complete_cf(
     model: PreTrainedModel,
     max_new_tokens: int = 3,
     debug: bool = False,
+    tracker: LogitTrackerParserLLM = None,
+    prob_limit: float = 0.1,
     **model_kwargs,
 ):
     """
@@ -52,15 +57,31 @@ def complete_cf(
     )
     parser_state = ParserState(parser)
 
+    vocab = tokenizer.get_vocab()
+    index_to_token = {v: k for k, v in tokenizer.get_vocab().items()}
+
     while gen_tokens < max_new_tokens:
         valid_next_lex = parser_state.next_lex(partial_completion)
+
         if len(valid_next_lex) == 0 or (
             len(valid_next_lex) == 1 and "$END" in valid_next_lex
         ):
             break
+
         r = [terminal_regexes[t] for t in valid_next_lex]
+
         if debug:
             print(f"valid next token: {r}")
+
+        re_tracker = None
+
+        if tracker:
+            re_tracker = LogitTracker(
+                patterns=[p.pattern for p in r],
+                token_to_index=vocab,
+                index_to_token=index_to_token,
+            )
+
         next_token_completion = complete_re(
             prompt_plus_completion,
             r,
@@ -69,8 +90,14 @@ def complete_cf(
             max_new_tokens=max_new_tokens,
             stop_after_match=True,
             debug=debug,
+            tracker=re_tracker,
+            prob_limit=prob_limit,
             **model_kwargs,
         )
+
+        if tracker:
+            tracker.re_steps.append(re_tracker)
+
         partial_completion += next_token_completion
         prompt_plus_completion = prompt_plus_completion + next_token_completion
         gen_tokens += 1
