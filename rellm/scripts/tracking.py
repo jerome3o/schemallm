@@ -10,7 +10,7 @@ def main():
     model = load_model("gpt2")
     tokenizer = load_tokenizer("gpt2")
 
-    email_address_regex = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
+    email_address_regex = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[a-zA-Z0-9]"
     pattern_list = [regex.compile(email_address_regex)]
 
     tracker = LogitTracker(

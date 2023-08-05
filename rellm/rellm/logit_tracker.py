@@ -7,6 +7,7 @@ class EndCondition(Enum):
     TOKEN_LOOKAHEAD = "token_lookahead"
     REPEAT = "repeat"
     MAX_TOKENS = "max_tokens"
+    PROBABILITY_LIMIT = "probability_limit"
     NONE = "none"
 
 

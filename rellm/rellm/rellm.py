@@ -19,6 +19,7 @@ def complete_re(
     stop_after_match: bool = True,
     debug: bool = False,
     tracker: LogitTracker = None,
+    prob_limit: float = 0.1,
     **model_kwargs,
 ):
     """
@@ -59,16 +60,28 @@ def complete_re(
             logits_processor=[custom_mask_processor],
             **model_kwargs,
         )
+
         new_token_ids = output_ids[0, prompt_length:].to("cpu")
         output_text = tokenizer.decode(new_token_ids, skip_special_tokens=True)
+
+        if tracker:
+            tracker.result_tokens.append(output_text)
+
+        if custom_mask_processor.last_prob < prob_limit:
+            for p in pattern:
+                m = p.match(partial_completion)
+                if m:
+                    if tracker:
+                        tracker.end_condition = EndCondition.PROBABILITY_LIMIT
+                        tracker.result = m[0]
+
+                    return m[0]
+
         previous_partial_completion = partial_completion
         partial_completion += output_text
         prompt_plus_completion = prompt_plus_completion + output_text
         if debug:
             print("step={} completion={}".format(gen_tokens, partial_completion))
-
-        if tracker:
-            tracker.result_tokens.append(output_text)
 
         # TODO(j.swannack): refactor
         if stop_after_match:
