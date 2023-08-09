@@ -77,6 +77,7 @@ def complete_cf(
 
         if tracker:
             re_tracker = LogitTracker(
+                prompt=prompt_plus_completion,
                 patterns=[p.pattern for p in r],
                 token_to_index=vocab,
                 index_to_token=index_to_token,

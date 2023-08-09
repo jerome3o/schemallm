@@ -18,6 +18,7 @@ class LogitTrackerStep(BaseModel):
 
 class LogitTracker(BaseModel):
     patterns: List[str]
+    prompt: str
     token_to_index: Dict[str, int]
     index_to_token: Dict[int, str]
     steps: List[LogitTrackerStep] = []
