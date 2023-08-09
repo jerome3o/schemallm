@@ -163,7 +163,7 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
                 mask=mask[top_100].tolist(),
             ))
 
-            current_completion += re_tracker.result
+        current_completion += re_tracker.result
 
     return InfoGraphicData(
         prompt=tracker.prompt,
