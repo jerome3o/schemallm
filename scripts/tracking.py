@@ -132,10 +132,9 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
 
         if not re_tracker.steps:
             current_completion += re_tracker.patterns[0]
-            print("Constant: ", re_tracker.patterns)
             infographic_steps.append(InfoGraphicStep(
                 partial_completion=current_completion,
-                selected_token=re_tracker.patterns[0],
+                selected_token=re_tracker.result,
                 patterns=re_tracker.patterns,
                 tokens=[],
                 probabilities=[],
@@ -177,7 +176,7 @@ if __name__ == "__main__":
     import logging
 
     logging.basicConfig(level=logging.INFO)
-    # parser_logit_tracking()
+    parser_logit_tracking()
 
     print("Loading tracker data")
     tracker = LogitTrackerParserLLM.parse_file(Path("outputs") / "tracker_script_result_parser.json")

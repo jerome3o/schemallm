@@ -8,6 +8,7 @@ class EndCondition(Enum):
     REPEAT = "repeat"
     MAX_TOKENS = "max_tokens"
     PROBABILITY_LIMIT = "probability_limit"
+    CONSTANT = "constant"
     NONE = "none"
 
 

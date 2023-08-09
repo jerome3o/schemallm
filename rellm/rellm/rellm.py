@@ -29,7 +29,12 @@ def complete_re(
         pattern = [pattern]
 
     if len(pattern) == 1 and is_constant_regex(pattern[0].pattern):
-        return get_constant_regex_value(pattern[0].pattern)
+        constant_value = get_constant_regex_value(pattern[0].pattern)
+        if tracker:
+            tracker.end_condition = EndCondition.CONSTANT
+            tracker.result = constant_value
+
+        return constant_value
 
     gen_tokens = 0
     partial_completion = ""
