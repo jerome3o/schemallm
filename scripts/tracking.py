@@ -131,7 +131,7 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
     for re_tracker in tracker.re_steps:
 
         if not re_tracker.steps:
-            current_completion += re_tracker.patterns[0]
+            current_completion += re_tracker.result
             infographic_steps.append(InfoGraphicStep(
                 partial_completion=current_completion,
                 selected_token=re_tracker.result,
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     import logging
 
     logging.basicConfig(level=logging.INFO)
-    parser_logit_tracking()
+    # parser_logit_tracking()
 
     print("Loading tracker data")
     tracker = LogitTrackerParserLLM.parse_file(Path("outputs") / "tracker_script_result_parser.json")
