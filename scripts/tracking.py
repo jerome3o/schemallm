@@ -98,7 +98,7 @@ data: {"name": "John", "age": 50, "location": "New York"}
 bio: Jerome is from New Zealand, and he's 27
 data: """
 
-    tracker = LogitTrackerParserLLM(cfg=cfg)
+    tracker = LogitTrackerParserLLM(cfg=cfg, prompt=prompt)
     parser = Lark(
         cfg,
         parser="lalr",
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     import logging
 
     logging.basicConfig(level=logging.INFO)
-    # parser_logit_tracking()
+    parser_logit_tracking()
 
     print("Loading tracker data")
     tracker = LogitTrackerParserLLM.parse_file(Path("outputs") / "tracker_script_result_parser.json")
