@@ -141,10 +141,9 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
                 probabilities=[],
                 mask=[],
             ))
+            continue
 
         for re_i, step in enumerate(re_tracker.steps):
-            current_completion += re_tracker.result_tokens[re_i]
-            print("Generated: ", re_tracker.result)
 
             logits = np.array(step.logits_raw)
             probabilities = np.exp(logits) / np.sum(np.exp(logits))
@@ -156,7 +155,7 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
             top_100 = sorted_indices[:-100:-1]
 
             infographic_steps.append(InfoGraphicStep(
-                partial_completion=current_completion,
+                partial_completion=current_completion + "".join(re_tracker.result_tokens[:re_i]),
                 selected_token=re_tracker.result_tokens[re_i],
                 patterns=re_tracker.patterns,
                 tokens=[re_tracker.index_to_token[i] for i in top_100],
@@ -164,8 +163,10 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
                 mask=mask[top_100].tolist(),
             ))
 
+            current_completion += re_tracker.result
+
     return InfoGraphicData(
-        prompt="todo",
+        prompt=tracker.prompt,
         pattern=tracker.cfg,
         steps=infographic_steps,
     )
@@ -176,7 +177,7 @@ if __name__ == "__main__":
     import logging
 
     logging.basicConfig(level=logging.INFO)
-    parser_logit_tracking()
+    # parser_logit_tracking()
 
     print("Loading tracker data")
     tracker = LogitTrackerParserLLM.parse_file(Path("outputs") / "tracker_script_result_parser.json")
@@ -184,5 +185,5 @@ if __name__ == "__main__":
 
     infographic_data = convert_tracker_to_infographic(tracker)
 
-
+    (Path("outputs") / "infographic_data.json").write_text(infographic_data.json(indent=4))
     print(infographic_data)
