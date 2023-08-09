@@ -103,6 +103,10 @@ data: """
     print(result)
     (Path("outputs") / "tracker_script_result_parser.json").write_text(tracker.json(indent=4))
 
+
+def convert_to_ui_ready_obj(tracker: LogitTrackerParserLLM):
+    pass
+
 if __name__ == "__main__":
     import logging
 
