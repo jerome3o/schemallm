@@ -1,14 +1,33 @@
-import regex
+from typing import List
 from pathlib import Path
+
+import regex
 from pydantic import BaseModel
 
 from lark import Lark
+import numpy as np
 
 from jsonllm.server.load_model import load_model, load_tokenizer
 from rellm.rellm import complete_re
 from rellm.logit_tracker import LogitTracker
 from parserllm.logit_tracker import LogitTrackerParserLLM
 from parserllm import complete_cf
+
+
+class InfoGraphicStep(BaseModel):
+    partial_completion: str
+    selected_token: str
+    patterns: List[str]
+
+    tokens: List[str]
+    probabilities: List[float]
+    mask: List[bool]
+
+class InfoGraphicData(BaseModel):
+    prompt: str
+    pattern: str
+
+    steps: List[InfoGraphicStep]
 
 
 def re_logit_tracking():
@@ -104,11 +123,47 @@ data: """
     (Path("outputs") / "tracker_script_result_parser.json").write_text(tracker.json(indent=4))
 
 
-def convert_to_ui_ready_obj(tracker: LogitTrackerParserLLM):
-    pass
+def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphicData:
+
+    infographic_steps = []
+
+    current_completion = ""
+    for re_tracker in tracker.re_steps:
+
+        if not re_tracker.steps:
+            print("Constant: ", re_tracker.patterns)
+
+        for re_i, step in enumerate(re_tracker.steps):
+
+            print("Generated: ", re_tracker.result)
+
+            logits = np.array(step.logits_raw)
+            probabilities = np.exp(logits) / np.sum(np.exp(logits))
+
+            mask = np.zeros_like(step.logits_raw)
+            mask[step.allowed_ids] = 1
+
+            sorted_indices = np.argsort(probabilities)
+            top_100 = sorted_indices[:-100:-1]
+
+            infographic_steps.append(InfoGraphicStep(
+                selected_token=re_tracker.result_tokens[re_i],
+                patterns=re_tracker.patterns,
+                tokens=[tracker.index_to_token[i] for i in top_100],
+                probabilities=probabilities[top_100].tolist(),
+                mask=mask[top_100].tolist(),
+            ))
+
+
 
 if __name__ == "__main__":
     import logging
 
     logging.basicConfig(level=logging.INFO)
-    parser_logit_tracking()
+    # parser_logit_tracking()
+
+    print("Loading tracker data")
+    tracker = LogitTrackerParserLLM.parse_file(Path("outputs") / "tracker_script_result_parser.json")
+    print("Loaded tracker data")
+
+    convert_tracker_to_infographic(tracker)
