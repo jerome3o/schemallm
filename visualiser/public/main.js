@@ -1,6 +1,10 @@
 console.log('Hello World');
 
 
+// Define the dimensions of your visualization
+const WIDTH = 600;
+const HEIGHT = 400;
+
 let data = {};
 
 $.getJSON("/data/infographic_data.json", function(response) {
@@ -25,5 +29,20 @@ function updateVisualization(stepIndex) {
     $("#selectedTokenText").text(stepData.selected_token);
 
     // Update the bar plot, todo
-    // updateBarPlot(stepData);
+    updateBarPlot(stepData);
+}
+
+function updateBarPlot(stepData) {
+    let trace = {
+        x: stepData.tokens,
+        y: stepData.probabilities,
+        type: 'bar'
+    }
+    let layout = {
+        title: 'Token Probabilities',
+        xaxis: { title: 'Tokens' },
+        yaxis: { title: 'Probabilities' }
+    };
+
+    Plotly.react('barContainer', [trace], layout);
 }
