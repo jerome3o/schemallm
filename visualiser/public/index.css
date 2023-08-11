@@ -1,0 +1,6 @@
+/* make selectedTokenText id red */
+
+#selectedTokenText {
+  color: red;
+  font-weight: bold;
+}
