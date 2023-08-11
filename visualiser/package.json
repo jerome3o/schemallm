@@ -1,0 +1,12 @@
+{
+  "name": "visualiser",
+  "version": "1.0.0",
+  "description": "The aim with this package is to visualise the logits during parserllm guided text generation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
