@@ -3,6 +3,7 @@ secret/
 scratch/
 .vscode/
 .xkm
+node_modules/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
