@@ -4,6 +4,7 @@ console.log('Hello World');
 // Define the dimensions of your visualization
 const WIDTH = 600;
 const HEIGHT = 400;
+const NTOKENS = 20;
 
 let data = {};
 
@@ -33,9 +34,10 @@ function updateVisualization(stepIndex) {
 }
 
 function updateBarPlot(stepData) {
+    // take first 10 tokens and probabilities
     let trace = {
-        x: stepData.tokens,
-        y: stepData.probabilities,
+        x: stepData.tokens.slice(0, NTOKENS),
+        y: stepData.probabilities.slice(0, NTOKENS),
         type: 'bar'
     }
     let layout = {
