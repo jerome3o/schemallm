@@ -12,6 +12,7 @@ class ReTokenFilter:
 
     @staticmethod
     def build_decoded_tokens_cache(tokenizer: PreTrainedTokenizer) -> Dict[int, str]:
+        # TODO(j.swannack): apply mapping for special symbols.
         return {
             token_id: tokenizer.decode([token_id])
             for _, token_id in tokenizer.get_vocab().items()
@@ -27,6 +28,8 @@ class ReTokenFilter:
         # We only want to allow this token to generate if the regex is already matched.
         partial = decoded_token != ""
 
+        # TODO(j.swannack): full completion, OR when there is a non-full standard match, that is
+        #   longer than the original partial_completion
         return any(
             pattern.fullmatch(partial_completion + decoded_token, partial=partial)
             for pattern in patterns
@@ -40,6 +43,7 @@ class ReTokenFilter:
         if isinstance(patterns, regex.Pattern):
             patterns = [patterns]
 
+        # TODO(j.swannack): investigate this, I don't think it works as intended.
         with ThreadPoolExecutor():
             valid_token_ids = set(
                 filter(
