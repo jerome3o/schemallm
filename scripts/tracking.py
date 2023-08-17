@@ -23,6 +23,7 @@ class InfoGraphicStep(BaseModel):
     probabilities: List[float]
     mask: List[bool]
 
+
 class InfoGraphicData(BaseModel):
     prompt: str
     pattern: str
@@ -54,7 +55,6 @@ def re_logit_tracking():
     )
 
     (Path("outputs") / "tracker_script_result.json").write_text(tracker.json(indent=4))
-
 
 
 def parser_logit_tracking():
@@ -120,30 +120,31 @@ data: """
     )
 
     print(result)
-    (Path("outputs") / "tracker_script_result_parser.json").write_text(tracker.json(indent=4))
+    (Path("outputs") / "tracker_script_result_parser.json").write_text(
+        tracker.json(indent=4)
+    )
 
 
 def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphicData:
-
     infographic_steps = []
 
     current_completion = ""
     for re_tracker in tracker.re_steps:
-
         if not re_tracker.steps:
             current_completion += re_tracker.result
-            infographic_steps.append(InfoGraphicStep(
-                partial_completion=current_completion,
-                selected_token=re_tracker.result,
-                patterns=re_tracker.patterns,
-                tokens=[],
-                probabilities=[],
-                mask=[],
-            ))
+            infographic_steps.append(
+                InfoGraphicStep(
+                    partial_completion=current_completion,
+                    selected_token=re_tracker.result,
+                    patterns=re_tracker.patterns,
+                    tokens=[],
+                    probabilities=[],
+                    mask=[],
+                )
+            )
             continue
 
         for re_i, step in enumerate(re_tracker.steps):
-
             logits = np.array(step.logits_raw)
             probabilities = np.exp(logits) / np.sum(np.exp(logits))
 
@@ -153,14 +154,17 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
             sorted_indices = np.argsort(probabilities)
             top_100 = sorted_indices[:-100:-1]
 
-            infographic_steps.append(InfoGraphicStep(
-                partial_completion=current_completion + "".join(re_tracker.result_tokens[:re_i]),
-                selected_token=re_tracker.result_tokens[re_i],
-                patterns=re_tracker.patterns,
-                tokens=[re_tracker.index_to_token[i] for i in top_100],
-                probabilities=probabilities[top_100].tolist(),
-                mask=mask[top_100].tolist(),
-            ))
+            infographic_steps.append(
+                InfoGraphicStep(
+                    partial_completion=current_completion
+                    + "".join(re_tracker.result_tokens[:re_i]),
+                    selected_token=re_tracker.result_tokens[re_i],
+                    patterns=re_tracker.patterns,
+                    tokens=[re_tracker.index_to_token[i] for i in top_100],
+                    probabilities=probabilities[top_100].tolist(),
+                    mask=mask[top_100].tolist(),
+                )
+            )
 
         current_completion += re_tracker.result
 
@@ -171,18 +175,26 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
     )
 
 
+def generate_infographic_data():
+    print("Loading tracker data")
+    tracker = LogitTrackerParserLLM.parse_file(
+        Path("outputs") / "tracker_script_result_parser.json"
+    )
+    print("Loaded tracker data")
+
+    infographic_data = convert_tracker_to_infographic(tracker)
+
+    (Path("outputs") / "infographic_data.json").write_text(
+        infographic_data.json(indent=4)
+    )
+    print(infographic_data)
+
 
 if __name__ == "__main__":
     import logging
 
     logging.basicConfig(level=logging.INFO)
-    # parser_logit_tracking()
 
-    print("Loading tracker data")
-    tracker = LogitTrackerParserLLM.parse_file(Path("outputs") / "tracker_script_result_parser.json")
-    print("Loaded tracker data")
-
-    infographic_data = convert_tracker_to_infographic(tracker)
-
-    (Path("outputs") / "infographic_data.json").write_text(infographic_data.json(indent=4))
-    print(infographic_data)
+    re_logit_tracking()
+    parser_logit_tracking()
+    generate_infographic_data()
