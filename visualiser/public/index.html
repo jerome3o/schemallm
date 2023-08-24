@@ -11,14 +11,18 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <h1>hey</h1>
-    <div id="sliderContainer">
-        <input type="range" min="0" value="0" id="stepSlider">
+    <div id="mainContainer">
+        <div id="topRow">
+            <div id="textBox">
+                <p><span  id="partialCompletionText"></span><span  id="selectedTokenText"></span></p>
+            </div>
+            <div id="barContainer"></div>
+        </div>
+
+        <div id="bottomRow">
+            <input type="range" min="0" value="0" id="stepSlider">
+        </div>
     </div>
-    <div id="textBox">
-      <p><span  id="partialCompletionText"></span><span  id="selectedTokenText"></span></p>
-    </div>
-    <div id="barContainer"></div>
     <script src="main.js"></script>
 </body>
 </html>
