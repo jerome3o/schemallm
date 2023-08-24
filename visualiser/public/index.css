@@ -33,6 +33,16 @@ body {
   justify-content: center;
   /* flex along the vertical */
   flex-direction: column;
+  padding: 5px;
+}
+
+#textBox {
+  padding: 5px;
+  background-color: lightgrey;
+  /* make monospaced font */
+  font-family: monospace;
+  font-size: 2em;
+  max-width: 50%;
 }
 
 
