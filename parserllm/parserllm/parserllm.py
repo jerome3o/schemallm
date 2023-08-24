@@ -4,6 +4,7 @@ from transformers import PreTrainedModel, PreTrainedTokenizer
 
 from rellm import complete_re
 from rellm.logit_tracker import LogitTracker
+from rellm.re_token_filter import build_index_to_decoded_token_map
 from parserllm.logit_tracker import LogitTrackerParserLLM
 
 
@@ -57,8 +58,8 @@ def complete_cf(
     )
     parser_state = ParserState(parser)
 
-    vocab = tokenizer.get_vocab()
-    index_to_token = {v: k for k, v in tokenizer.get_vocab().items()}
+    index_to_token = build_index_to_decoded_token_map(tokenizer)
+    token_to_index = {v: k for k, v in index_to_token.items()}
 
     while gen_tokens < max_new_tokens:
         valid_next_lex = parser_state.next_lex(partial_completion)
@@ -79,7 +80,7 @@ def complete_cf(
             re_tracker = LogitTracker(
                 prompt=prompt_plus_completion,
                 patterns=[p.pattern for p in r],
-                token_to_index=vocab,
+                token_to_index=token_to_index,
                 index_to_token=index_to_token,
             )
 

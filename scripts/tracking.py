@@ -10,7 +10,7 @@ import numpy as np
 from jsonllm.server.load_model import load_model, load_tokenizer
 from rellm.rellm import complete_re
 from rellm.logit_tracker import LogitTracker
-from rellm.re_token_filter import build_decoded_token_map
+from rellm.re_token_filter import build_index_to_decoded_token_map
 from parserllm.logit_tracker import LogitTrackerParserLLM
 from parserllm import complete_cf
 
@@ -39,12 +39,12 @@ def re_logit_tracking():
     email_address_regex = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[a-zA-Z0-9]"
     pattern_list = [regex.compile(email_address_regex)]
 
-    decoded_token_map = build_decoded_token_map(tokenizer)
+    decoded_token_map = build_index_to_decoded_token_map(tokenizer)
 
     tracker = LogitTracker(
         patterns=[p.pattern for p in pattern_list],
-        token_to_index=decoded_token_map,
-        index_to_token={v: k for k, v in decoded_token_map.items()},
+        token_to_index={v: k for k, v in decoded_token_map.items()},
+        index_to_token=decoded_token_map,
     )
 
     result = complete_re(
