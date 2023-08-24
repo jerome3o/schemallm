@@ -138,7 +138,6 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
     current_completion = ""
     for re_tracker in tracker.re_steps:
         if not re_tracker.steps:
-            current_completion += re_tracker.result
             infographic_steps.append(
                 InfoGraphicStep(
                     partial_completion=current_completion,
@@ -149,6 +148,7 @@ def convert_tracker_to_infographic(tracker: LogitTrackerParserLLM) -> InfoGraphi
                     mask=[],
                 )
             )
+            current_completion += re_tracker.result
             continue
 
         for re_i, step in enumerate(re_tracker.steps):
@@ -194,6 +194,10 @@ def generate_infographic_data():
     (Path("outputs") / "infographic_data.json").write_text(
         infographic_data.json(indent=4)
     )
+
+    (Path("visualiser") / "public" / "data" / "infographic_data.json").write_text(
+        infographic_data.json(indent=4)
+    )
     print(infographic_data)
 
 
@@ -202,6 +206,6 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
 
-    re_logit_tracking()
-    # parser_logit_tracking()
-    # generate_infographic_data()
+    # re_logit_tracking()
+    parser_logit_tracking()
+    generate_infographic_data()
