@@ -40,15 +40,19 @@ def re_logit_tracking():
     pattern_list = [regex.compile(email_address_regex)]
 
     decoded_token_map = build_index_to_decoded_token_map(tokenizer)
+    prompt = (
+        "My name is Jerome Swannack, I work at coolcompany.com and my email address is "
+    )
 
     tracker = LogitTracker(
+        prompt=prompt,
         patterns=[p.pattern for p in pattern_list],
         token_to_index={v: k for k, v in decoded_token_map.items()},
         index_to_token=decoded_token_map,
     )
 
     result = complete_re(
-        "My name is Jerome Swannack, I work at coolcompany.com and my email address is ",
+        prompt,
         pattern=pattern_list,
         tokenizer=tokenizer,
         model=model,
