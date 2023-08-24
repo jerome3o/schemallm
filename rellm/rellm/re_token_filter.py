@@ -5,18 +5,17 @@ import regex
 from transformers import PreTrainedTokenizer
 
 
+def build_decoded_token_map(tokenizer: PreTrainedTokenizer) -> Dict[int, str]:
+    return {
+        token_id: tokenizer.decode([token_id])
+        for _, token_id in tokenizer.get_vocab().items()
+    }
+
+
 class ReTokenFilter:
     def __init__(self, tokenizer: PreTrainedTokenizer):
         self.tokenizer = tokenizer
-        self.decoded_tokens_cache = self.build_decoded_tokens_cache(tokenizer)
-
-    @staticmethod
-    def build_decoded_tokens_cache(tokenizer: PreTrainedTokenizer) -> Dict[int, str]:
-        # TODO(j.swannack): apply mapping for special symbols.
-        return {
-            token_id: tokenizer.decode([token_id])
-            for _, token_id in tokenizer.get_vocab().items()
-        }
+        self.decoded_tokens_cache = build_decoded_token_map(tokenizer)
 
     def is_valid_token(
         self, token_id: int, partial_completion: str, patterns: List[regex.Pattern]
