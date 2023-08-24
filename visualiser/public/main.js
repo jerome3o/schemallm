@@ -40,10 +40,12 @@ function updateBarPlot(stepData) {
         y: stepData.probabilities.slice(0, NTOKENS),
         type: 'bar'
     }
+    let yRange = [0, 1];
+
     let layout = {
         title: 'Token Probabilities',
         xaxis: { title: 'Tokens' },
-        yaxis: { title: 'Probabilities' }
+        yaxis: { title: 'Probabilities' , range: yRange},
     };
 
     Plotly.react('barContainer', [trace], layout);
