@@ -43,6 +43,8 @@ body {
   font-family: monospace;
   font-size: 2em;
   max-width: 50%;
+  min-width: 50%;
+  word-wrap: break-word;
 }
 
 
