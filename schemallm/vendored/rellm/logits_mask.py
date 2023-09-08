@@ -1,7 +1,7 @@
 import numpy as np
 from transformers import LogitsProcessor
 
-from rellm.logit_tracker import LogitTracker
+from schemallm.vendored.rellm.logit_tracker import LogitTracker
 
 
 def softmax(x: np.ndarray):

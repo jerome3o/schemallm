@@ -8,11 +8,11 @@ from lark import Lark
 import numpy as np
 
 from schemallm.server.load_model import load_model, load_tokenizer
-from rellm.rellm import complete_re
-from rellm.logit_tracker import LogitTracker
-from rellm.re_token_filter import build_index_to_decoded_token_map
-from parserllm.logit_tracker import LogitTrackerParserLLM
-from parserllm import complete_cf
+from schemallm.vendored.rellm.rellm import complete_re
+from schemallm.vendored.rellm.logit_tracker import LogitTracker
+from schemallm.vendored.rellm.re_token_filter import build_index_to_decoded_token_map
+from schemallm.vendored.parserllm.logit_tracker import LogitTrackerParserLLM
+from schemallm.vendored.parserllm import complete_cf
 
 
 class InfoGraphicStep(BaseModel):

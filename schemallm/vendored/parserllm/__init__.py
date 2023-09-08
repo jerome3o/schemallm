@@ -1,1 +1,1 @@
-from parserllm.parserllm import complete_cf
+from schemallm.vendored.parserllm.parserllm import complete_cf

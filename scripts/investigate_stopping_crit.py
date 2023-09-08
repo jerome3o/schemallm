@@ -1,8 +1,8 @@
 import os
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import regex
-from rellm import complete_re
-from parserllm import complete_cf
+from schemallm.vendored.rellm import complete_re
+from schemallm.vendored.parserllm import complete_cf
 from pydantic import BaseModel
 from lark import Lark
 from schemallm.server.jsonschema2cfg import create_lark_cfg_for_schema

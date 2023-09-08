@@ -3,9 +3,9 @@ from typing import List
 import regex
 from transformers import PreTrainedModel, PreTrainedTokenizer
 
-from rellm.logits_mask import LogitsMask
-from rellm.re_token_filter import ReTokenFilter
-from rellm.logit_tracker import LogitTracker, EndCondition
+from schemallm.vendored.rellm.logits_mask import LogitsMask
+from schemallm.vendored.rellm.re_token_filter import ReTokenFilter
+from schemallm.vendored.rellm.logit_tracker import LogitTracker, EndCondition
 
 ESCAPED_CHARS = r"\.*+?{}()[]|^$"
 

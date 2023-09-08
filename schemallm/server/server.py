@@ -11,8 +11,8 @@ import regex
 import torch
 from fastapi import FastAPI, Depends
 from lark import Lark
-from parserllm import complete_cf
-from rellm import complete_re
+from schemallm.vendored.parserllm import complete_cf
+from schemallm.vendored.rellm import complete_re
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
