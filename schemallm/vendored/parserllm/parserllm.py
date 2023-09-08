@@ -5,7 +5,7 @@ from transformers import PreTrainedModel, PreTrainedTokenizer
 from schemallm.vendored.rellm import complete_re
 from schemallm.vendored.rellm.logit_tracker import LogitTracker
 from schemallm.vendored.rellm.re_token_filter import build_index_to_decoded_token_map
-from parserllm.logit_tracker import LogitTrackerParserLLM
+from schemallm.vendored.parserllm.logit_tracker import LogitTrackerParserLLM
 
 
 def extract_terminal_regex(parser, stop_token):
