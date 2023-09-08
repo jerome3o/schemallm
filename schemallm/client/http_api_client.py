@@ -1,7 +1,7 @@
 from typing import Type, TypeVar
 from pydantic import BaseModel
 from requests import post
-from jsonllm.models.api import (
+from schemallm.models.api import (
     CompletionRequest,
     CompletionResponse,
     CfgCompletionRequest,

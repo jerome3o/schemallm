@@ -1,5 +1,5 @@
-from jsonllm.client.langchain_client import JsonSchemaLLM, CfgLLM, ReLLM, StandardLLM
-from jsonllm.models.jsonschema import parse_json_schema
+from schemallm.client.langchain_client import JsonSchemaLLM, CfgLLM, ReLLM, StandardLLM
+from schemallm.models.jsonschema import parse_json_schema
 
 
 def _test_with_json_schema():

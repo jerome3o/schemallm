@@ -6,7 +6,7 @@ from transformers import (
     StoppingCriteria,
 )
 
-from jsonllm.models.api import (
+from schemallm.models.api import (
     CompletionRequest,
     CompletionResponse,
 )

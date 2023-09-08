@@ -18,10 +18,10 @@ from transformers import (
     AutoTokenizer,
 )
 
-from jsonllm.server.load_model import load_model, load_tokenizer
-from jsonllm.server.jsonschema2cfg import create_lark_cfg_for_schema
-from jsonllm.server.standard_completion import complete_standard
-from jsonllm.models.api import (
+from schemallm.server.load_model import load_model, load_tokenizer
+from schemallm.server.jsonschema2cfg import create_lark_cfg_for_schema
+from schemallm.server.standard_completion import complete_standard
+from schemallm.models.api import (
     CompletionRequest,
     CompletionResponse,
     SchemaCompletionRequest,

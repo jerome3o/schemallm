@@ -3,16 +3,16 @@ from pydantic import BaseModel
 from fastapi.testclient import TestClient
 import json
 
-from jsonllm.tests.fixtures import model, tokenizer
-from jsonllm.server.server import app as _app, get_model, get_tokenizer
-from jsonllm.models.api import (
+from schemallm.tests.fixtures import model, tokenizer
+from schemallm.server.server import app as _app, get_model, get_tokenizer
+from schemallm.models.api import (
     SchemaCompletionRequest,
     CompletionRequest,
     CfgCompletionRequest,
 )
 
 from fastapi.testclient import TestClient
-from jsonllm.server.load_model import load_model, load_tokenizer
+from schemallm.server.load_model import load_model, load_tokenizer
 
 
 @pytest.fixture(scope="module")

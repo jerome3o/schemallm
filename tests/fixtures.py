@@ -1,5 +1,5 @@
 import pytest
-from jsonllm.server.load_model import load_model, load_tokenizer
+from schemallm.server.load_model import load_model, load_tokenizer
 
 
 @pytest.fixture(scope="module")

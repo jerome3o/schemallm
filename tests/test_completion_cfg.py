@@ -1,9 +1,9 @@
 import pytest
 
-from jsonllm.server.server import complete_with_cfg
-from jsonllm.tests.fixtures import model, tokenizer
+from schemallm.server.server import complete_with_cfg
+from schemallm.tests.fixtures import model, tokenizer
 
-from jsonllm.models.api import CfgCompletionRequest
+from schemallm.models.api import CfgCompletionRequest
 
 
 def test_cfg_completion_with_agent_prompt(model, tokenizer):

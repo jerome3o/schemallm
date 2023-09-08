@@ -1,8 +1,8 @@
 from typing import List, Optional, Union
 from pydantic import BaseModel
 from lark import Lark
-from jsonllm.server.jsonschema2cfg import create_lark_cfg_for_schema
-from jsonllm.models.jsonschema import parse_json_schema
+from schemallm.server.jsonschema2cfg import create_lark_cfg_for_schema
+from schemallm.models.jsonschema import parse_json_schema
 
 # TODO(j.swannack): set up tests with pytest
 

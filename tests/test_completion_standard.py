@@ -1,6 +1,6 @@
-from jsonllm.models.api import CompletionRequest
-from jsonllm.server.server import complete_standard
-from jsonllm.server.load_model import load_model, load_tokenizer
+from schemallm.models.api import CompletionRequest
+from schemallm.server.server import complete_standard
+from schemallm.server.load_model import load_model, load_tokenizer
 
 
 def main():

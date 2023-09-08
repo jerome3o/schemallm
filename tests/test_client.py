@@ -1,4 +1,4 @@
-from jsonllm.client import JsonLlmClient
+from schemallm.client import JsonLlmClient
 from pydantic import BaseModel
 
 

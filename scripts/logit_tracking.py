@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from lark import Lark
 import numpy as np
 
-from jsonllm.server.load_model import load_model, load_tokenizer
+from schemallm.server.load_model import load_model, load_tokenizer
 from rellm.rellm import complete_re
 from rellm.logit_tracker import LogitTracker
 from rellm.re_token_filter import build_index_to_decoded_token_map

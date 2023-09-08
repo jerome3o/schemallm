@@ -5,7 +5,7 @@ from rellm import complete_re
 from parserllm import complete_cf
 from pydantic import BaseModel
 from lark import Lark
-from jsonllm.server.jsonschema2cfg import create_lark_cfg_for_schema
+from schemallm.server.jsonschema2cfg import create_lark_cfg_for_schema
 
 _model = os.environ["MODEL_PATH"]
 
