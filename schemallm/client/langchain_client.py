@@ -8,16 +8,16 @@ from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
 
 from schemallm.models.jsonschema import JsonSchema, parse_json_schema
-from schemallm.client.http_api_client import JsonLlmClient, DEFAULT_BASE_URL
+from schemallm.client.http_api_client import SchemaLlmClient, DEFAULT_BASE_URL
 
 
 class BaseJsonLlmLLM(LLM):
     base_url: str = DEFAULT_BASE_URL
-    api_client: JsonLlmClient = None
+    api_client: SchemaLlmClient = None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.api_client = JsonLlmClient(base_url=self.base_url)
+        self.api_client = SchemaLlmClient(base_url=self.base_url)
 
 
 class JsonSchemaLLM(BaseJsonLlmLLM):

@@ -21,7 +21,7 @@ DEFAULT_BASE_URL = "http://localhost:8000"
 # request/response models
 
 
-class JsonLlmClient(BaseModel):
+class SchemaLlmClient(BaseModel):
     base_url: str = DEFAULT_BASE_URL
 
     def _request(

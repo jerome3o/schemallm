@@ -1,9 +1,9 @@
-from schemallm.client import JsonLlmClient
+from schemallm.client import SchemaLlmClient
 from pydantic import BaseModel
 
 
 def main():
-    client = JsonLlmClient()
+    client = SchemaLlmClient()
     print(client.completion_standard("Hello, world!", max_tokens=10))
 
     class PersonalDetails(BaseModel):
