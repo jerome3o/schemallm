@@ -11,7 +11,7 @@ from schemallm.models.jsonschema import JsonSchema, parse_json_schema
 from schemallm.client.http_api_client import SchemaLlmClient, DEFAULT_BASE_URL
 
 
-class BaseJsonLlmLLM(LLM):
+class BaseSchemaLlmLLM(LLM):
     base_url: str = DEFAULT_BASE_URL
     api_client: SchemaLlmClient = None
 
@@ -20,7 +20,7 @@ class BaseJsonLlmLLM(LLM):
         self.api_client = SchemaLlmClient(base_url=self.base_url)
 
 
-class JsonSchemaLLM(BaseJsonLlmLLM):
+class JsonSchemaLLM(BaseSchemaLlmLLM):
     # TODO(j.swannack): could use a validator here to cast the dict to a JsonSchema
     schema_restriction: JsonSchema | dict
 
@@ -55,7 +55,7 @@ class JsonSchemaLLM(BaseJsonLlmLLM):
         return json.dumps(result_obj.completion)
 
 
-class CfgLLM(BaseJsonLlmLLM):
+class CfgLLM(BaseSchemaLlmLLM):
     cfg: str
 
     @property
@@ -83,7 +83,7 @@ class CfgLLM(BaseJsonLlmLLM):
         ).completion
 
 
-class ReLLM(BaseJsonLlmLLM):
+class ReLLM(BaseSchemaLlmLLM):
     pattern: str
 
     @property
@@ -111,7 +111,7 @@ class ReLLM(BaseJsonLlmLLM):
         ).completion
 
 
-class StandardLLM(BaseJsonLlmLLM):
+class StandardLLM(BaseSchemaLlmLLM):
     @property
     def _llm_type(self) -> str:
         return "jsonllm_standard"
