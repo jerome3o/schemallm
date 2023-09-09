@@ -165,6 +165,28 @@ print(
 
 ### LangChain Client
 
+Here is a quick example of how to use the JsonSchemaLLM LangChain client, but note there are also CfgLLM, ReLLM, and StandardLLM langchain implementations.
+
+```python
+
+from schemallm.client.langchain_client import JsonSchemaLLM
+from schemallm.models.jsonschema import parse_json_schema
+from pydantic import BaseModel
+
+
+# json schema
+class PersonalDetails(BaseModel):
+    name: str
+    location: str
+
+
+llm = JsonSchemaLLM(schema_restriction=parse_json_schema(PersonalDetails.schema()))
+result = llm(
+    "Tell me about yourself, in JSON format!:\n",
+)
+print(result)
+```
+
 Prior art:
 * [ReLLM](https://github.com/r2d4/rellm)
 * [ParserLLM](https://github.com/r2d4/parserllm)
