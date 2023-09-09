@@ -1,7 +1,7 @@
 import pytest
 
 from schemallm.server.server import complete_with_cfg
-from schemallm.tests.fixtures import model, tokenizer
+from tests.fixtures import model, tokenizer
 
 from schemallm.models.api import CfgCompletionRequest
 
