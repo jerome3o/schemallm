@@ -124,6 +124,21 @@ result = complete_with_schema(
 ```
 
 ### Server
+
+You can run the inference server with:
+
+```bash
+python -m schemallm.server.server
+```
+
+You will need some environment variables set:
+
+```bash
+export MODEL_PATH=gpt-2
+```
+
+This can also point to other huggingface paths.
+
 ### HTTP Client
 ### LangChain Client
 
