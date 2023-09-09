@@ -139,7 +139,30 @@ export MODEL_PATH=gpt-2
 
 This can also point to other huggingface paths.
 
+Now navigate to http://localhost:8000/docs to see the openapi docs for the server.
+
 ### HTTP Client
+
+```python
+
+from schemallm.client import SchemaLlmClient
+from pydantic import BaseModel
+
+client = SchemaLlmClient()
+
+class PersonalDetails(BaseModel):
+    name: str
+    age: int
+    location: str
+
+print(
+    client.completion_with_pydantic(
+        "Tell me about yourself, in JSON format!:\n",
+        model=PersonalDetails,
+    )
+)
+```
+
 ### LangChain Client
 
 Prior art:
